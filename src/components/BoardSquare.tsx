@@ -5,9 +5,13 @@ import { ItemTypes } from "../utils/Constants";
 type BoardSquareProps = {
   x: number;
   y: number;
-  moveChecker: (coords: number[]) => void;
-  canMoveChecker: (coords: number[]) => boolean;
+  moveChecker: (coords: number[], item: DropItemProps) => void;
+  canMoveChecker: (coords: number[], item: DropItemProps) => boolean;
   children: JSX.Element | null;
+};
+
+export type DropItemProps = {
+  id: string;
 };
 
 const BoardSquare = ({
@@ -18,21 +22,19 @@ const BoardSquare = ({
   children,
 }: BoardSquareProps) => {
   const dark = (x + y) % 2 === 1;
-  const [{ isOver, canDrop, item }, drop] = useDrop(
+  const [{ isOver, canDrop }, drop] = useDrop(
     () => ({
       accept: ItemTypes.CHECKER,
-      canDrop: () => canMoveChecker([x, y]),
-      drop: () => moveChecker([x, y]),
+      canDrop: (item: DropItemProps) => canMoveChecker([x, y], item),
+      drop: (item: DropItemProps) => moveChecker([x, y], item),
       collect: (monitor) => ({
         isOver: !!monitor.isOver(),
         canDrop: !!monitor.canDrop(),
-        item: monitor.getItem(),
       }),
     }),
     [x, y, moveChecker, canMoveChecker]
   );
 
-  console.log("Dragged item: " + item);
   return (
     <div ref={drop} className="relative w-full h-full">
       <Square dark={dark}>{children}</Square>

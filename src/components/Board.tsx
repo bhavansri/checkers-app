@@ -1,28 +1,53 @@
 import { DndProvider } from "react-dnd";
 import CheckerPiece from "./CheckerPiece";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import BoardSquare from "./BoardSquare";
+import BoardSquare, { DropItemProps } from "./BoardSquare";
 
 type BoardProps = {
-  playerPositions: number[];
-  updatePosition: (position: number[]) => void;
+  playerPositions: { [id: string]: number[] };
+  updatePosition: (position: number[], item: DropItemProps) => void;
 };
 
 function renderSquare(
   i: number,
-  checkerPosition: number[],
-  updatePosition: (position: number[]) => void
+  playerPositions: { [id: string]: number[] },
+  updatePosition: (position: number[], item: DropItemProps) => void
 ) {
   const x = i % 8;
   const y = Math.floor(i / 8);
-  const displayChecker = checkerPosition[0] === x && checkerPosition[1] === y;
 
-  function canMoveChecker(destPos: number[]): boolean {
+  function shouldDisplayChecker(): boolean {
+    for (const key in playerPositions) {
+      const val: number[] = playerPositions[key];
+
+      if (val[0] === x && val[1] === y) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  function getId(): string {
+    for (const key in playerPositions) {
+      const val: number[] = playerPositions[key];
+
+      if (val[0] === x && val[1] === y) {
+        return key;
+      }
+    }
+
+    return "";
+  }
+
+  function canMoveChecker(coords: number[], item: DropItemProps): boolean {
+    const checkerPosition: number[] = playerPositions[item.id];
+
     if (
-      (checkerPosition[0] + 1 == destPos[0] &&
-        checkerPosition[1] + 1 == destPos[1]) ||
-      (checkerPosition[0] - 1 == destPos[0] &&
-        checkerPosition[1] + 1 == destPos[1])
+      (checkerPosition[0] + 1 == coords[0] &&
+        checkerPosition[1] - 1 == coords[1]) ||
+      (checkerPosition[0] - 1 == coords[0] &&
+        checkerPosition[1] - 1 == coords[1])
     ) {
       return true;
     } else {
@@ -38,7 +63,9 @@ function renderSquare(
         moveChecker={updatePosition}
         canMoveChecker={canMoveChecker}
       >
-        {displayChecker ? <CheckerPiece dark={true} /> : null}
+        {shouldDisplayChecker() ? (
+          <CheckerPiece dark={true} id={getId()} />
+        ) : null}
       </BoardSquare>
     </div>
   );
