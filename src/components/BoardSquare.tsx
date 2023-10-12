@@ -5,8 +5,8 @@ import { ItemTypes } from "../utils/Constants";
 type BoardSquareProps = {
   x: number;
   y: number;
-  moveChecker: (final: number[], item: DropItemProps) => void;
-  canMoveChecker: (final: number[], item: DropItemProps) => boolean;
+  moveChecker: (final: number[], id: string) => void;
+  canMoveChecker: (final: number[], id: string) => boolean;
   children: JSX.Element | null;
 };
 
@@ -25,8 +25,8 @@ const BoardSquare = ({
   const [{ isOver, canDrop }, drop] = useDrop(
     () => ({
       accept: ItemTypes.CHECKER,
-      canDrop: (item: DropItemProps) => canMoveChecker([x, y], item),
-      drop: (item: DropItemProps) => moveChecker([x, y], item),
+      canDrop: (item: DropItemProps) => canMoveChecker([x, y], item.id),
+      drop: (item: DropItemProps) => moveChecker([x, y], item.id),
       collect: (monitor) => ({
         isOver: !!monitor.isOver(),
         canDrop: !!monitor.canDrop(),
