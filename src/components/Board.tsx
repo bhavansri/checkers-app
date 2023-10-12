@@ -43,6 +43,15 @@ function renderSquare(
   function canMoveChecker(coords: number[], item: DropItemProps): boolean {
     const checkerPosition: number[] = playerPositions[item.id];
 
+    for (const key in playerPositions) {
+      if (
+        playerPositions[key][0] === coords[0] &&
+        playerPositions[key][1] === coords[1]
+      ) {
+        return false;
+      }
+    }
+
     if (
       (checkerPosition[0] + 1 == coords[0] &&
         checkerPosition[1] - 1 == coords[1]) ||
