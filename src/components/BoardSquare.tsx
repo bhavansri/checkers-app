@@ -5,8 +5,8 @@ import { ItemTypes } from "../utils/Constants";
 type BoardSquareProps = {
   x: number;
   y: number;
-  moveChecker: (coords: number[], item: DropItemProps) => void;
-  canMoveChecker: (coords: number[], item: DropItemProps) => boolean;
+  moveChecker: (final: number[], item: DropItemProps) => void;
+  canMoveChecker: (final: number[], item: DropItemProps) => boolean;
   children: JSX.Element | null;
 };
 

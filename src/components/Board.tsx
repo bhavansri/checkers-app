@@ -1,24 +1,26 @@
 import { DndProvider } from "react-dnd";
-import CheckerPiece from "./CheckerPiece";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import BoardSquare, { DropItemProps } from "./BoardSquare";
+import { CpuPiece, PlayerPiece } from "./CheckerPiece";
 
 type BoardProps = {
-  playerPositions: { [id: string]: number[] };
+  player: { [id: string]: number[] };
   updatePosition: (position: number[], item: DropItemProps) => void;
+  computer: { [id: string]: number[] };
 };
 
 function renderSquare(
   i: number,
-  playerPositions: { [id: string]: number[] },
+  player: { [id: string]: number[] },
+  computer: { [id: string]: number[] },
   updatePosition: (position: number[], item: DropItemProps) => void
 ) {
   const x = i % 8;
   const y = Math.floor(i / 8);
 
-  function shouldDisplayChecker(): boolean {
-    for (const key in playerPositions) {
-      const val: number[] = playerPositions[key];
+  function showChecker(dict: { [id: string]: number[] }): boolean {
+    for (const key in dict) {
+      const val: number[] = dict[key];
 
       if (val[0] === x && val[1] === y) {
         return true;
@@ -28,9 +30,9 @@ function renderSquare(
     return false;
   }
 
-  function getId(): string {
-    for (const key in playerPositions) {
-      const val: number[] = playerPositions[key];
+  function getIdForPiece(dict: { [id: string]: number[] }): string {
+    for (const key in dict) {
+      const val: number[] = dict[key];
 
       if (val[0] === x && val[1] === y) {
         return key;
@@ -40,23 +42,18 @@ function renderSquare(
     return "";
   }
 
-  function canMoveChecker(coords: number[], item: DropItemProps): boolean {
-    const checkerPosition: number[] = playerPositions[item.id];
+  function canMoveChecker(final: number[], item: DropItemProps): boolean {
+    const initial: number[] = player[item.id];
 
-    for (const key in playerPositions) {
-      if (
-        playerPositions[key][0] === coords[0] &&
-        playerPositions[key][1] === coords[1]
-      ) {
+    for (const key in player) {
+      if (player[key][0] === final[0] && player[key][1] === final[1]) {
         return false;
       }
     }
 
     if (
-      (checkerPosition[0] + 1 == coords[0] &&
-        checkerPosition[1] - 1 == coords[1]) ||
-      (checkerPosition[0] - 1 == coords[0] &&
-        checkerPosition[1] - 1 == coords[1])
+      (initial[0] + 1 == final[0] && initial[1] - 1 == final[1]) ||
+      (initial[0] - 1 == final[0] && initial[1] - 1 == final[1])
     ) {
       return true;
     } else {
@@ -72,19 +69,24 @@ function renderSquare(
         moveChecker={updatePosition}
         canMoveChecker={canMoveChecker}
       >
-        {shouldDisplayChecker() ? (
-          <CheckerPiece dark={true} id={getId()} />
-        ) : null}
+        <>
+          {showChecker(player) ? (
+            <PlayerPiece id={getIdForPiece(player)} />
+          ) : null}
+          {showChecker(computer) ? (
+            <CpuPiece id={getIdForPiece(computer)} />
+          ) : null}
+        </>
       </BoardSquare>
     </div>
   );
 }
 
-const Board = ({ playerPositions, updatePosition }: BoardProps) => {
+const Board = ({ player, updatePosition, computer }: BoardProps) => {
   const squares = [];
 
   for (let i = 0; i < 64; i++) {
-    squares.push(renderSquare(i, playerPositions, updatePosition));
+    squares.push(renderSquare(i, player, computer, updatePosition));
   }
   return (
     <DndProvider backend={HTML5Backend}>
