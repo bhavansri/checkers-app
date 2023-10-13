@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Board from "./components/Board";
 import {
   CpuMovePossibility,
@@ -12,6 +12,16 @@ function App() {
   const [player, setPlayer] = useState(playerCheckers);
   const [cpuTurn, setCpuTurn] = useState(false);
   const [computer, setComputer] = useState(computerCheckers);
+  const [hoverElement, setHoverElement] = useState<string | null>(null);
+
+  const onHoverChange = (isHovering: boolean, itemId: string) => {
+    console.log("Item " + itemId + "is hovering? " + isHovering);
+    if (isHovering) {
+      setHoverElement(itemId);
+    } else {
+      setHoverElement(null);
+    }
+  };
 
   const isEmptySquare = useCallback(
     (coord: number[]) => {
@@ -259,7 +269,6 @@ function App() {
             setPlayer(newPlayer);
           }
 
-          console.log("This is called");
           setComputer((prevComputer) => ({
             ...prevComputer,
             [id]: {
@@ -396,6 +405,8 @@ function App() {
           computer={computer}
           moveChecker={moveChecker}
           canMoveChecker={canMoveChecker}
+          onHoverChange={onHoverChange}
+          hoverElement={hoverElement}
         />
       </div>
     </div>

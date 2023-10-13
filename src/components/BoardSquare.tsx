@@ -7,6 +7,7 @@ type BoardSquareProps = {
   y: number;
   moveChecker: (final: number[], id: string) => void;
   canMoveChecker: (final: number[], id: string) => boolean;
+  hoveringId: string | null;
   children: JSX.Element | null;
 };
 
@@ -19,9 +20,12 @@ const BoardSquare = ({
   y,
   moveChecker,
   canMoveChecker,
+  hoveringId,
   children,
 }: BoardSquareProps) => {
   const dark = (x + y) % 2 === 1;
+  const showHoverPreview =
+    hoveringId !== null ? canMoveChecker([x, y], hoveringId) : false;
   const [{ isOver, canDrop }, drop] = useDrop(
     () => ({
       accept: ItemTypes.CHECKER,
@@ -35,10 +39,12 @@ const BoardSquare = ({
     [x, y, moveChecker, canMoveChecker]
   );
 
+  showHoverPreview && console.log(showHoverPreview, x, y);
+
   return (
     <div ref={drop} className="relative w-full h-full">
       <Square dark={dark}>{children}</Square>
-      {!isOver && canDrop && (
+      {(showHoverPreview || (!isOver && canDrop)) && (
         <div
           style={{
             position: "absolute",

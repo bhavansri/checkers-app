@@ -8,6 +8,8 @@ type BoardProps = {
   player: { [id: string]: PlayerCheckerProps };
   moveChecker: (final: number[], id: string) => void;
   canMoveChecker: (final: number[], id: string) => boolean;
+  onHoverChange: (isHovering: boolean, itemId: string) => void;
+  hoverElement: string | null;
   computer: { [id: string]: CpuCheckerProps };
 };
 
@@ -16,11 +18,14 @@ function renderSquare(
   player: { [id: string]: PlayerCheckerProps },
   computer: { [id: string]: CpuCheckerProps },
   moveChecker: (final: number[], id: string) => void,
-  canMoveChecker: (final: number[], id: string) => boolean
+  canMoveChecker: (final: number[], id: string) => boolean,
+  hoveringId: string | null,
+  onHoverChange: (isHovering: boolean, itemId: string) => void
 ) {
   const x = i % 8;
   const y = Math.floor(i / 8);
 
+  hoveringId && console.log("hovering: " + hoveringId);
   function showChecker(dict: { [id: string]: PlayerCheckerProps }): boolean {
     for (const key in dict) {
       const val: number[] = dict[key].coords;
@@ -76,10 +81,14 @@ function renderSquare(
         y={y}
         moveChecker={moveChecker}
         canMoveChecker={canMoveChecker}
+        hoveringId={hoveringId}
       >
         <>
           {showChecker(player) ? (
-            <PlayerPiece id={getIdForPiece(player)} />
+            <PlayerPiece
+              id={getIdForPiece(player)}
+              onHoverChange={onHoverChange}
+            />
           ) : null}
           {showCpuChecker(computer) ? (
             <CpuPiece id={getCpuIdForPiece(computer)} />
@@ -95,12 +104,22 @@ const Board = ({
   computer,
   moveChecker,
   canMoveChecker,
+  onHoverChange,
+  hoverElement,
 }: BoardProps) => {
   const squares = [];
 
   for (let i = 0; i < 64; i++) {
     squares.push(
-      renderSquare(i, player, computer, moveChecker, canMoveChecker)
+      renderSquare(
+        i,
+        player,
+        computer,
+        moveChecker,
+        canMoveChecker,
+        hoverElement,
+        onHoverChange
+      )
     );
   }
   return (
