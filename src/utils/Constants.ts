@@ -17,6 +17,16 @@ export type PlayerCheckerProps = {
   lastMove: Move;
 };
 
+export type CpuCheckerProps = {
+  coords: number[];
+  lastMove: Move;
+};
+
+export type CpuMovePossibility = {
+  dest: number[];
+  move: Move;
+};
+
 export const playerCheckers: { [id: string]: PlayerCheckerProps } = {
   "1": {
     coords: [0, 7],
@@ -92,17 +102,17 @@ export const playerCheckers: { [id: string]: PlayerCheckerProps } = {
   },
 };
 
-export const computerCheckers: { [id: string]: number[] } = {
-  "1": [1, 0],
-  "2": [3, 0],
-  "3": [5, 0],
-  "4": [7, 0],
-  "5": [0, 1],
-  "6": [2, 1],
-  "7": [4, 1],
-  "8": [6, 1],
-  "9": [1, 2],
-  "10": [3, 2],
-  "11": [5, 2],
-  "12": [7, 2],
+export const computerCheckers: { [id: string]: CpuCheckerProps } = {
+  "1": { coords: [1, 0], lastMove: Move.none },
+  "2": { coords: [3, 0], lastMove: Move.none },
+  "3": { coords: [5, 0], lastMove: Move.none },
+  "4": { coords: [7, 0], lastMove: Move.none },
+  "5": { coords: [0, 1], lastMove: Move.none },
+  "6": { coords: [2, 1], lastMove: Move.none },
+  "7": { coords: [4, 1], lastMove: Move.none },
+  "8": { coords: [6, 1], lastMove: Move.none },
+  "9": { coords: [1, 2], lastMove: Move.none },
+  "10": { coords: [3, 2], lastMove: Move.none },
+  "11": { coords: [5, 2], lastMove: Move.none },
+  "12": { coords: [7, 2], lastMove: Move.none },
 };

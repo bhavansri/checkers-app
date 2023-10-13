@@ -1,6 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import Board from "./components/Board";
-import { Move, computerCheckers, playerCheckers } from "./utils/Constants";
+import {
+  CpuMovePossibility,
+  Move,
+  computerCheckers,
+  playerCheckers,
+} from "./utils/Constants";
 import { getMoveType, isValidBounds } from "./utils/helpers";
 
 function App() {
@@ -18,8 +23,8 @@ function App() {
       }
 
       for (const key in computer) {
-        const cpuXY = computer[key];
-        if (cpuXY[0] === coord[0] && cpuXY[1] === coord[1]) {
+        const cpuCoords = computer[key].coords;
+        if (cpuCoords[0] === coord[0] && cpuCoords[1] === coord[1]) {
           return false;
         }
       }
@@ -29,7 +34,36 @@ function App() {
     [computer, player]
   );
 
-  const getLeftHop = useCallback(
+  const getLeftHopForCPU = useCallback(
+    (coords: number[]): number[] => {
+      const leftHopCoords = [coords[0] - 2, coords[1] + 2];
+
+      if (
+        isValidBounds(leftHopCoords) === false ||
+        isEmptySquare(leftHopCoords) === false
+      ) {
+        return [];
+      }
+
+      for (const key in player) {
+        const playerCoords = player[key].coords;
+
+        if (
+          coords[0] - 1 === playerCoords[0] &&
+          playerCoords[0] - 1 === leftHopCoords[0] &&
+          coords[1] + 1 === playerCoords[1] &&
+          playerCoords[1] + 1 === leftHopCoords[1]
+        ) {
+          return leftHopCoords;
+        }
+      }
+
+      return [];
+    },
+    [isEmptySquare, player]
+  );
+
+  const getLeftHopForPlayer = useCallback(
     (coords: number[]): number[] => {
       const leftHopCoords = [coords[0] - 2, coords[1] - 2];
 
@@ -41,13 +75,13 @@ function App() {
       }
 
       for (const key in computer) {
-        const cpuXY = computer[key];
+        const cpuCoords = computer[key].coords;
 
         if (
-          coords[0] - 1 === cpuXY[0] &&
-          cpuXY[0] - 1 === leftHopCoords[0] &&
-          coords[1] - 1 === cpuXY[1] &&
-          cpuXY[1] - 1 === leftHopCoords[1]
+          coords[0] - 1 === cpuCoords[0] &&
+          cpuCoords[0] - 1 === leftHopCoords[0] &&
+          coords[1] - 1 === cpuCoords[1] &&
+          cpuCoords[1] - 1 === leftHopCoords[1]
         ) {
           return leftHopCoords;
         }
@@ -58,7 +92,36 @@ function App() {
     [computer, isEmptySquare]
   );
 
-  const getRightHop = useCallback(
+  const getRightHopForCPU = useCallback(
+    (coords: number[]): number[] => {
+      const rightHopCoords = [coords[0] + 2, coords[1] + 2];
+
+      if (
+        isValidBounds(rightHopCoords) === false ||
+        isEmptySquare(rightHopCoords) === false
+      ) {
+        return [];
+      }
+
+      for (const key in player) {
+        const playerCoords = player[key].coords;
+
+        if (
+          coords[0] + 1 === playerCoords[0] &&
+          playerCoords[0] + 1 === rightHopCoords[0] &&
+          coords[1] + 1 === playerCoords[1] &&
+          playerCoords[1] + 1 === rightHopCoords[1]
+        ) {
+          return rightHopCoords;
+        }
+      }
+
+      return [];
+    },
+    [isEmptySquare, player]
+  );
+
+  const getRightHopForPlayer = useCallback(
     (coords: number[]): number[] => {
       const rightHopCoords = [coords[0] + 2, coords[1] - 2];
 
@@ -70,13 +133,13 @@ function App() {
       }
 
       for (const key in computer) {
-        const cpuXY = computer[key];
+        const cpuCoords = computer[key].coords;
 
         if (
-          coords[0] + 1 === cpuXY[0] &&
-          cpuXY[0] + 1 === rightHopCoords[0] &&
-          coords[1] - 1 === cpuXY[1] &&
-          cpuXY[1] - 1 === rightHopCoords[1]
+          coords[0] + 1 === cpuCoords[0] &&
+          cpuCoords[0] + 1 === rightHopCoords[0] &&
+          coords[1] - 1 === cpuCoords[1] &&
+          cpuCoords[1] - 1 === rightHopCoords[1]
         ) {
           return rightHopCoords;
         }
@@ -90,8 +153,8 @@ function App() {
   useEffect(() => {
     for (const key in player) {
       const playerXY = player[key].coords;
-      const leftHopCoords: number[] = getLeftHop(playerXY);
-      const rightHopCoords: number[] = getRightHop(playerXY);
+      const leftHopCoords: number[] = getLeftHopForPlayer(playerXY);
+      const rightHopCoords: number[] = getRightHopForPlayer(playerXY);
 
       if (
         leftHopCoords.length !== player[key].leftHopCoords.length ||
@@ -108,7 +171,13 @@ function App() {
         }));
       }
     }
-  }, [player, computer, isEmptySquare, getLeftHop, getRightHop]);
+  }, [
+    player,
+    computer,
+    isEmptySquare,
+    getLeftHopForPlayer,
+    getRightHopForPlayer,
+  ]);
 
   const moveChecker = useCallback(
     (final: number[], id: string) => {
@@ -124,9 +193,10 @@ function App() {
 
       if (removeCheckerCoords !== null) {
         for (const key in computer) {
+          const coords = computer[key].coords;
           if (
-            computer[key][0] === removeCheckerCoords[0] &&
-            computer[key][1] === removeCheckerCoords[1]
+            coords[0] === removeCheckerCoords[0] &&
+            coords[1] === removeCheckerCoords[1]
           ) {
             removeCheckerKey = key;
           }
@@ -155,16 +225,55 @@ function App() {
     [computer, player]
   );
 
-  const moveCpu = useCallback((final: number[], id: string) => {
-    setTimeout(function () {
-      setComputer((prevComputer) => ({
-        ...prevComputer,
-        [id]: final,
-      }));
+  const moveCpu = useCallback(
+    (movePossibility: CpuMovePossibility, id: string) => {
+      if (cpuTurn) {
+        setTimeout(function () {
+          const final = movePossibility.dest;
+          const move = movePossibility.move;
+          let removeCheckerCoords: number[] | null = null;
+          let removeCheckerKey: string | null = null;
+
+          if (move == Move.hopRight) {
+            removeCheckerCoords = [final[0] - 1, final[1] - 1];
+          } else if (move == Move.hopLeft) {
+            removeCheckerCoords = [final[0] + 1, final[1] - 1];
+          }
+
+          if (removeCheckerCoords !== null) {
+            for (const key in player) {
+              const coords = player[key].coords;
+              if (
+                coords[0] === removeCheckerCoords[0] &&
+                coords[1] === removeCheckerCoords[1]
+              ) {
+                removeCheckerKey = key;
+              }
+            }
+          }
+
+          if (removeCheckerKey !== null) {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { [removeCheckerKey]: removedProperty, ...newPlayer } =
+              player;
+            setPlayer(newPlayer);
+          }
+
+          console.log("This is called");
+          setComputer((prevComputer) => ({
+            ...prevComputer,
+            [id]: {
+              coords: movePossibility.dest,
+              lastMove: movePossibility.move,
+            },
+          }));
+        }, 1500);
+      }
 
       setCpuTurn(false);
-    }, 1500);
-  }, []);
+    },
+    [player, cpuTurn]
+  );
 
   const canMoveChecker = useCallback(
     (final: number[], id: string): boolean => {
@@ -184,13 +293,13 @@ function App() {
         rightHopCoords[1] === final[1]
       ) {
         return true;
-      } else if (leftHopCoords.length > 0 || rightHopCoords.length > 0) {
+      } else if (
+        leftHopCoords.length > 0 ||
+        rightHopCoords.length > 0 ||
+        isEmptySquare(final) === false
+      ) {
         return false;
       } else {
-        if (isEmptySquare(final) === false) {
-          return false;
-        }
-
         if (
           (initial[0] + 1 == final[0] && initial[1] - 1 == final[1]) ||
           (initial[0] - 1 == final[0] && initial[1] - 1 == final[1])
@@ -212,31 +321,12 @@ function App() {
     return randomKey;
   }, [computer]);
 
-  useEffect(() => {
-    console.log(player);
-  }, [player]);
+  const canMoveCpu = useCallback(
+    (final: number[], id: string): boolean => {
+      const initial: number[] = computer[id].coords;
 
-  useEffect(() => {
-    function canMoveCpu(final: number[], id: string): boolean {
-      const initial: number[] = computer[id];
-
-      if (isValidBounds(final) === false) {
+      if (isValidBounds(final) === false || isEmptySquare(final) === false) {
         return false;
-      }
-
-      for (const key in computer) {
-        if (computer[key][0] === final[0] && computer[key][1] === final[1]) {
-          return false;
-        }
-      }
-
-      for (const key in player) {
-        if (
-          player[key].coords[0] === final[0] &&
-          player[key].coords[1] === final[1]
-        ) {
-          return false;
-        }
       }
 
       if (
@@ -247,30 +337,56 @@ function App() {
       } else {
         return false;
       }
-    }
+    },
+    [computer, isEmptySquare]
+  );
 
+  useEffect(() => {
     if (cpuTurn) {
       let movedPiece = false;
 
       while (movedPiece == false) {
         const piece: string = fetchRandomCpu();
-        const coords: number[] = computer[piece];
+        const coords: number[] = computer[piece].coords;
+        const leftCoords: number[] = [coords[0] - 1, coords[1] + 1];
+        const rightCoords: number[] = [coords[0] + 1, coords[1] + 1];
+        const leftHopCoords: number[] = getLeftHopForCPU(coords);
+        const rightHopCoords: number[] = getRightHopForCPU(coords);
+        const possiblities: CpuMovePossibility[] = [];
 
-        const possiblities = [
-          [coords[0] - 1, coords[1] + 1],
-          [coords[0] + 1, coords[1] + 1],
-        ];
+        if (canMoveCpu(leftCoords, piece)) {
+          possiblities.push({ dest: leftCoords, move: Move.left });
+        }
+
+        if (canMoveCpu(rightCoords, piece)) {
+          possiblities.push({ dest: rightCoords, move: Move.right });
+        }
+
+        if (leftHopCoords.length > 0) {
+          possiblities.push({ dest: leftHopCoords, move: Move.hopLeft });
+        }
+
+        if (rightHopCoords.length > 0) {
+          possiblities.push({ dest: rightHopCoords, move: Move.hopRight });
+        }
 
         for (let i = 0; i < possiblities.length; i++) {
-          if (canMoveCpu(possiblities[i], piece)) {
-            moveCpu(possiblities[i], piece);
-            movedPiece = true;
-            break;
-          }
+          moveCpu(possiblities[i], piece);
+          movedPiece = true;
+          break;
         }
       }
     }
-  }, [player, cpuTurn, computer, fetchRandomCpu, moveCpu]);
+  }, [
+    player,
+    cpuTurn,
+    computer,
+    fetchRandomCpu,
+    moveCpu,
+    canMoveCpu,
+    getLeftHopForCPU,
+    getRightHopForCPU,
+  ]);
 
   return (
     <div>

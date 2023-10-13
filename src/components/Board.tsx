@@ -2,19 +2,19 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import BoardSquare from "./BoardSquare";
 import { CpuPiece, PlayerPiece } from "./CheckerPiece";
-import { PlayerCheckerProps } from "../utils/Constants";
+import { CpuCheckerProps, PlayerCheckerProps } from "../utils/Constants";
 
 type BoardProps = {
   player: { [id: string]: PlayerCheckerProps };
   moveChecker: (final: number[], id: string) => void;
   canMoveChecker: (final: number[], id: string) => boolean;
-  computer: { [id: string]: number[] };
+  computer: { [id: string]: CpuCheckerProps };
 };
 
 function renderSquare(
   i: number,
   player: { [id: string]: PlayerCheckerProps },
-  computer: { [id: string]: number[] },
+  computer: { [id: string]: CpuCheckerProps },
   moveChecker: (final: number[], id: string) => void,
   canMoveChecker: (final: number[], id: string) => boolean
 ) {
@@ -33,9 +33,9 @@ function renderSquare(
     return false;
   }
 
-  function showCpuChecker(dict: { [id: string]: number[] }): boolean {
+  function showCpuChecker(dict: { [id: string]: CpuCheckerProps }): boolean {
     for (const key in dict) {
-      const val: number[] = dict[key];
+      const val: number[] = dict[key].coords;
 
       if (val[0] === x && val[1] === y) {
         return true;
@@ -57,9 +57,9 @@ function renderSquare(
     return "";
   }
 
-  function getCpuIdForPiece(dict: { [id: string]: number[] }): string {
+  function getCpuIdForPiece(dict: { [id: string]: CpuCheckerProps }): string {
     for (const key in dict) {
-      const val: number[] = dict[key];
+      const val: number[] = dict[key].coords;
 
       if (val[0] === x && val[1] === y) {
         return key;
