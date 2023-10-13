@@ -2,21 +2,21 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import BoardSquare from "./BoardSquare";
 import { CpuPiece, PlayerPiece } from "./CheckerPiece";
-import { CpuCheckerProps, PlayerCheckerProps } from "../utils/Constants";
+import { CpuType, PlayerType } from "../utils/constants";
 
 type BoardProps = {
-  player: { [id: string]: PlayerCheckerProps };
+  player: PlayerType;
   moveChecker: (final: number[], id: string) => void;
   canMoveChecker: (final: number[], id: string) => boolean;
   onHoverChange: (isHovering: boolean, itemId: string) => void;
   hoverElement: string | null;
-  computer: { [id: string]: CpuCheckerProps };
+  computer: CpuType;
 };
 
 function renderSquare(
   i: number,
-  player: { [id: string]: PlayerCheckerProps },
-  computer: { [id: string]: CpuCheckerProps },
+  player: PlayerType,
+  computer: CpuType,
   moveChecker: (final: number[], id: string) => void,
   canMoveChecker: (final: number[], id: string) => boolean,
   hoveringId: string | null,
@@ -25,8 +25,7 @@ function renderSquare(
   const x = i % 8;
   const y = Math.floor(i / 8);
 
-  hoveringId && console.log("hovering: " + hoveringId);
-  function showChecker(dict: { [id: string]: PlayerCheckerProps }): boolean {
+  function showChecker(dict: CpuType): boolean {
     for (const key in dict) {
       const val: number[] = dict[key].coords;
 
@@ -38,7 +37,7 @@ function renderSquare(
     return false;
   }
 
-  function showCpuChecker(dict: { [id: string]: CpuCheckerProps }): boolean {
+  function showCpuChecker(dict: CpuType): boolean {
     for (const key in dict) {
       const val: number[] = dict[key].coords;
 
@@ -50,7 +49,7 @@ function renderSquare(
     return false;
   }
 
-  function getIdForPiece(dict: { [id: string]: PlayerCheckerProps }): string {
+  function getIdForPiece(dict: PlayerType): string {
     for (const key in dict) {
       const val: number[] = dict[key].coords;
 
@@ -62,7 +61,7 @@ function renderSquare(
     return "";
   }
 
-  function getCpuIdForPiece(dict: { [id: string]: CpuCheckerProps }): string {
+  function getCpuIdForPiece(dict: CpuType): string {
     for (const key in dict) {
       const val: number[] = dict[key].coords;
 

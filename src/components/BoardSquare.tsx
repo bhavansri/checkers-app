@@ -1,6 +1,6 @@
 import { useDrop } from "react-dnd";
 import Square from "./Square";
-import { ItemTypes } from "../utils/Constants";
+import { ItemTypes } from "../utils/constants";
 
 type BoardSquareProps = {
   x: number;

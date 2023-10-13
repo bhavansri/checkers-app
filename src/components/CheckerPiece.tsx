@@ -1,5 +1,5 @@
 import { useDrag } from "react-dnd";
-import { ItemTypes } from "../utils/Constants";
+import { ItemTypes } from "../utils/constants";
 
 type PieceProps = {
   id: string;

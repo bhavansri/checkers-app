@@ -27,7 +27,10 @@ export type CpuMovePossibility = {
   move: Move;
 };
 
-export const playerCheckers: { [id: string]: PlayerCheckerProps } = {
+export type PlayerType = { [id: string]: PlayerCheckerProps };
+export type CpuType = { [id: string]: CpuCheckerProps };
+
+export const playerCheckers: PlayerType = {
   "1": {
     coords: [0, 7],
     leftHopCoords: [],
@@ -102,7 +105,7 @@ export const playerCheckers: { [id: string]: PlayerCheckerProps } = {
   },
 };
 
-export const computerCheckers: { [id: string]: CpuCheckerProps } = {
+export const computerCheckers: CpuType = {
   "1": { coords: [1, 0], lastMove: Move.none },
   "2": { coords: [3, 0], lastMove: Move.none },
   "3": { coords: [5, 0], lastMove: Move.none },

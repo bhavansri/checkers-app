@@ -1,4 +1,4 @@
-import { Move } from "./Constants";
+import { CpuType, Move, PlayerType } from "./constants";
 
 export function isValidBounds(pos: number[]) {
   if (pos[0] < 0 || pos[0] >= 8 || pos[1] < 0 || pos[0] >= 8) {
@@ -6,6 +6,28 @@ export function isValidBounds(pos: number[]) {
   } else {
     return true;
   }
+}
+
+export function checkIfEmpty(
+  player: PlayerType,
+  computer: CpuType,
+  destination: number[]
+): boolean {
+  for (const key in player) {
+    const playerXY = player[key].coords;
+    if (playerXY[0] === destination[0] && playerXY[1] === destination[1]) {
+      return false;
+    }
+  }
+
+  for (const key in computer) {
+    const cpuCoords = computer[key].coords;
+    if (cpuCoords[0] === destination[0] && cpuCoords[1] === destination[1]) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 export function getMoveType(initial: number[], final: number[]) {

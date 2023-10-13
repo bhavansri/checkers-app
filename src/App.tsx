@@ -1,12 +1,12 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Board from "./components/Board";
 import {
   CpuMovePossibility,
   Move,
   computerCheckers,
   playerCheckers,
-} from "./utils/Constants";
-import { getMoveType, isValidBounds } from "./utils/helpers";
+} from "./utils/constants";
+import { checkIfEmpty, getMoveType, isValidBounds } from "./utils/helpers";
 
 function App() {
   const [player, setPlayer] = useState(playerCheckers);
@@ -15,31 +15,12 @@ function App() {
   const [hoverElement, setHoverElement] = useState<string | null>(null);
 
   const onHoverChange = (isHovering: boolean, itemId: string) => {
-    console.log("Item " + itemId + "is hovering? " + isHovering);
-    if (isHovering) {
-      setHoverElement(itemId);
-    } else {
-      setHoverElement(null);
-    }
+    isHovering ? setHoverElement(itemId) : setHoverElement(null);
   };
 
   const isEmptySquare = useCallback(
     (coord: number[]) => {
-      for (const key in player) {
-        const playerXY = player[key].coords;
-        if (playerXY[0] === coord[0] && playerXY[1] === coord[1]) {
-          return false;
-        }
-      }
-
-      for (const key in computer) {
-        const cpuCoords = computer[key].coords;
-        if (cpuCoords[0] === coord[0] && cpuCoords[1] === coord[1]) {
-          return false;
-        }
-      }
-
-      return true;
+      return checkIfEmpty(player, computer, coord);
     },
     [computer, player]
   );
@@ -350,7 +331,7 @@ function App() {
     [computer, isEmptySquare]
   );
 
-  useEffect(() => {
+  const generateCpuMove = useCallback(() => {
     if (cpuTurn) {
       let movedPiece = false;
 
@@ -387,15 +368,18 @@ function App() {
       }
     }
   }, [
-    player,
-    cpuTurn,
-    computer,
-    fetchRandomCpu,
-    moveCpu,
     canMoveCpu,
+    computer,
+    cpuTurn,
+    fetchRandomCpu,
     getLeftHopForCPU,
     getRightHopForCPU,
+    moveCpu,
   ]);
+
+  useEffect(() => {
+    generateCpuMove();
+  }, [generateCpuMove]);
 
   return (
     <div>
