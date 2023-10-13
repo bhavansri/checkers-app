@@ -21,7 +21,9 @@ const PlayerPiece = ({ id }: PieceProps) => {
       ref={drag}
       className={`w-14 h-14 rounded-full bg-black ${opacity} cursor-move`}
       style={{ transform: "translate(0, 0)" }}
-    ></div>
+    >
+      <p className="text-white text-xl">{id}</p>
+    </div>
   );
 };
 
@@ -30,7 +32,9 @@ const CpuPiece = ({ id }: PieceProps) => {
     <div
       className={`w-14 h-14 rounded-full bg-stone-400`}
       style={{ transform: "translate(0, 0)" }}
-    ></div>
+    >
+      <p className="text-blue text-xl">{id}</p>
+    </div>
   );
 };
 

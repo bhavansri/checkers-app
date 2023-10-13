@@ -2,7 +2,7 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import BoardSquare from "./BoardSquare";
 import { CpuPiece, PlayerPiece } from "./CheckerPiece";
-import { PlayerCheckerProps } from "../App";
+import { PlayerCheckerProps } from "../utils/Constants";
 
 type BoardProps = {
   player: { [id: string]: PlayerCheckerProps };
