@@ -10,27 +10,32 @@ export enum Move {
   hopRight = "HOP_RIGHT",
 }
 
-export type PlayerCheckerProps = {
-  coords: number[];
-  leftHopCoords: number[];
-  rightHopCoords: number[];
-  lastMove: Move;
-};
-
-export type CpuCheckerProps = {
-  coords: number[];
-  lastMove: Move;
-};
+export interface GameState {
+  playerCheckers: PlayerPieces;
+  computerCheckers: ComputerPieces;
+}
 
 export type CpuMovePossibility = {
   dest: number[];
   move: Move;
 };
 
-export type PlayerType = { [id: string]: PlayerCheckerProps };
-export type CpuType = { [id: string]: CpuCheckerProps };
+export type PlayerPieces = { [id: string]: PlayerPiece };
+export type ComputerPieces = { [id: string]: ComputerPiece };
 
-export const playerCheckers: PlayerType = {
+type PlayerPiece = {
+  coords: number[];
+  leftHopCoords: number[];
+  rightHopCoords: number[];
+  lastMove: Move;
+};
+
+type ComputerPiece = {
+  coords: number[];
+  lastMove: Move;
+};
+
+const playerCheckers: PlayerPieces = {
   "1": {
     coords: [0, 7],
     leftHopCoords: [],
@@ -105,7 +110,7 @@ export const playerCheckers: PlayerType = {
   },
 };
 
-export const computerCheckers: CpuType = {
+const computerCheckers: ComputerPieces = {
   "1": { coords: [1, 0], lastMove: Move.none },
   "2": { coords: [3, 0], lastMove: Move.none },
   "3": { coords: [5, 0], lastMove: Move.none },
@@ -118,4 +123,9 @@ export const computerCheckers: CpuType = {
   "10": { coords: [3, 2], lastMove: Move.none },
   "11": { coords: [5, 2], lastMove: Move.none },
   "12": { coords: [7, 2], lastMove: Move.none },
+};
+
+export const defaultGame: GameState = {
+  playerCheckers: playerCheckers,
+  computerCheckers: computerCheckers,
 };

@@ -41,6 +41,7 @@ const CpuPiece = ({ id }: CpuProps) => {
     <div
       className={`w-14 h-14 rounded-full bg-stone-400`}
       style={{ transform: "translate(0, 0)" }}
+      data-testid="cpu-checker"
     ></div>
   );
 };

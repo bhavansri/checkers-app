@@ -1,22 +1,18 @@
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
 import BoardSquare from "./BoardSquare";
 import { CpuPiece, PlayerPiece } from "./CheckerPiece";
-import { CpuType, PlayerType } from "../utils/constants";
+import { ComputerPieces, GameState, PlayerPieces } from "../utils/constants";
 
 type BoardProps = {
-  player: PlayerType;
+  game: GameState;
   moveChecker: (final: number[], id: string) => void;
   canMoveChecker: (final: number[], id: string) => boolean;
   onHoverChange: (isHovering: boolean, itemId: string) => void;
   hoverElement: string | null;
-  computer: CpuType;
 };
 
 function renderSquare(
   i: number,
-  player: PlayerType,
-  computer: CpuType,
+  game: GameState,
   moveChecker: (final: number[], id: string) => void,
   canMoveChecker: (final: number[], id: string) => boolean,
   hoveringId: string | null,
@@ -25,7 +21,7 @@ function renderSquare(
   const x = i % 8;
   const y = Math.floor(i / 8);
 
-  function showChecker(dict: CpuType): boolean {
+  function showChecker(dict: ComputerPieces): boolean {
     for (const key in dict) {
       const val: number[] = dict[key].coords;
 
@@ -37,7 +33,7 @@ function renderSquare(
     return false;
   }
 
-  function showCpuChecker(dict: CpuType): boolean {
+  function showCpuChecker(dict: ComputerPieces): boolean {
     for (const key in dict) {
       const val: number[] = dict[key].coords;
 
@@ -49,7 +45,7 @@ function renderSquare(
     return false;
   }
 
-  function getIdForPiece(dict: PlayerType): string {
+  function getIdForPiece(dict: PlayerPieces): string {
     for (const key in dict) {
       const val: number[] = dict[key].coords;
 
@@ -61,7 +57,7 @@ function renderSquare(
     return "";
   }
 
-  function getCpuIdForPiece(dict: CpuType): string {
+  function getCpuIdForPiece(dict: ComputerPieces): string {
     for (const key in dict) {
       const val: number[] = dict[key].coords;
 
@@ -83,14 +79,14 @@ function renderSquare(
         hoveringId={hoveringId}
       >
         <>
-          {showChecker(player) ? (
+          {showChecker(game.playerCheckers) ? (
             <PlayerPiece
-              id={getIdForPiece(player)}
+              id={getIdForPiece(game.playerCheckers)}
               onHoverChange={onHoverChange}
             />
           ) : null}
-          {showCpuChecker(computer) ? (
-            <CpuPiece id={getCpuIdForPiece(computer)} />
+          {showCpuChecker(game.computerCheckers) ? (
+            <CpuPiece id={getCpuIdForPiece(game.computerCheckers)} />
           ) : null}
         </>
       </BoardSquare>
@@ -99,8 +95,7 @@ function renderSquare(
 }
 
 const Board = ({
-  player,
-  computer,
+  game,
   moveChecker,
   canMoveChecker,
   onHoverChange,
@@ -112,8 +107,7 @@ const Board = ({
     squares.push(
       renderSquare(
         i,
-        player,
-        computer,
+        game,
         moveChecker,
         canMoveChecker,
         hoverElement,
@@ -121,11 +115,7 @@ const Board = ({
       )
     );
   }
-  return (
-    <DndProvider backend={HTML5Backend}>
-      <div className="h-full w-full flex flex-wrap">{squares}</div>
-    </DndProvider>
-  );
+  return <div className="h-full w-full flex flex-wrap">{squares}</div>;
 };
 
 export default Board;
