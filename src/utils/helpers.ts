@@ -41,3 +41,7 @@ export function getMoveType(initial: number[], final: number[]) {
     return Move.none;
   }
 }
+
+export function timeout(delay: number) {
+  return new Promise((res) => setTimeout(res, delay));
+}

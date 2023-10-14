@@ -1,13 +1,12 @@
 import BoardSquare from "./BoardSquare";
 import { CpuPiece, PlayerPiece } from "./CheckerPiece";
 import { ComputerPieces, GameState, PlayerPieces } from "../utils/constants";
+import { useState } from "react";
 
 type BoardProps = {
   game: GameState;
   moveChecker: (final: number[], id: string) => void;
   canMoveChecker: (final: number[], id: string) => boolean;
-  onHoverChange: (isHovering: boolean, itemId: string) => void;
-  hoverElement: string | null;
 };
 
 function renderSquare(
@@ -94,14 +93,13 @@ function renderSquare(
   );
 }
 
-const Board = ({
-  game,
-  moveChecker,
-  canMoveChecker,
-  onHoverChange,
-  hoverElement,
-}: BoardProps) => {
+const Board = ({ game, moveChecker, canMoveChecker }: BoardProps) => {
   const squares = [];
+  const [hoverElement, setHoverElement] = useState<string | null>(null);
+
+  const onHoverChange = (isHovering: boolean, itemId: string) => {
+    isHovering ? setHoverElement(itemId) : setHoverElement(null);
+  };
 
   for (let i = 0; i < 64; i++) {
     squares.push(
@@ -115,6 +113,7 @@ const Board = ({
       )
     );
   }
+
   return <div className="h-full w-full flex flex-wrap">{squares}</div>;
 };
 

@@ -1,23 +1,14 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useReducer, useState } from "react";
 import Board from "./components/Board";
-import {
-  CpuMovePossibility,
-  GameState,
-  Move,
-  defaultGame,
-} from "./utils/constants";
-import { checkIfEmpty, getMoveType, isValidBounds } from "./utils/helpers";
+import { CpuMovePossibility, Move, defaultGame } from "./utils/constants";
+import { checkIfEmpty, isValidBounds, timeout } from "./utils/helpers";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
+import { gameReducer } from "./reducers";
 
 function App() {
-  const [game, setGame] = useState(defaultGame);
+  const [game, dispatch] = useReducer(gameReducer, defaultGame);
   const [cpuTurn, setCpuTurn] = useState(false);
-  const [hoverElement, setHoverElement] = useState<string | null>(null);
-
-  const onHoverChange = (isHovering: boolean, itemId: string) => {
-    isHovering ? setHoverElement(itemId) : setHoverElement(null);
-  };
 
   const isEmptySquare = useCallback(
     (coord: number[]) => {
@@ -56,36 +47,6 @@ function App() {
     [isEmptySquare, game]
   );
 
-  const getLeftHopForPlayer = useCallback(
-    (coords: number[]): number[] => {
-      const leftHopCoords = [coords[0] - 2, coords[1] - 2];
-      const computer = game.computerCheckers;
-
-      if (
-        isValidBounds(leftHopCoords) === false ||
-        isEmptySquare(leftHopCoords) === false
-      ) {
-        return [];
-      }
-
-      for (const key in computer) {
-        const cpuCoords = computer[key].coords;
-
-        if (
-          coords[0] - 1 === cpuCoords[0] &&
-          cpuCoords[0] - 1 === leftHopCoords[0] &&
-          coords[1] - 1 === cpuCoords[1] &&
-          cpuCoords[1] - 1 === leftHopCoords[1]
-        ) {
-          return leftHopCoords;
-        }
-      }
-
-      return [];
-    },
-    [game, isEmptySquare]
-  );
-
   const getRightHopForCPU = useCallback(
     (coords: number[]): number[] => {
       const rightHopCoords = [coords[0] + 2, coords[1] + 2];
@@ -116,220 +77,62 @@ function App() {
     [isEmptySquare, game]
   );
 
-  const getRightHopForPlayer = useCallback(
-    (coords: number[]): number[] => {
-      const rightHopCoords = [coords[0] + 2, coords[1] - 2];
-      const computer = game.computerCheckers;
-
-      if (
-        isValidBounds(rightHopCoords) === false ||
-        isEmptySquare(rightHopCoords) === false
-      ) {
-        return [];
-      }
-
-      for (const key in computer) {
-        const cpuCoords = computer[key].coords;
-
-        if (
-          coords[0] + 1 === cpuCoords[0] &&
-          cpuCoords[0] + 1 === rightHopCoords[0] &&
-          coords[1] - 1 === cpuCoords[1] &&
-          cpuCoords[1] - 1 === rightHopCoords[1]
-        ) {
-          return rightHopCoords;
-        }
-      }
-
-      return [];
-    },
-    [game, isEmptySquare]
-  );
-
-  useEffect(() => {
-    const player = game.playerCheckers;
-    for (const key in player) {
-      const playerXY = player[key].coords;
-      const leftHopCoords: number[] = getLeftHopForPlayer(playerXY);
-      const rightHopCoords: number[] = getRightHopForPlayer(playerXY);
-
-      if (
-        leftHopCoords.length !== player[key].leftHopCoords.length ||
-        rightHopCoords.length !== player[key].rightHopCoords.length
-      ) {
-        const newPieces = {
-          ...player,
-          [key]: {
-            coords: playerXY,
-            leftHopCoords: leftHopCoords,
-            rightHopCoords: rightHopCoords,
-            lastMove: player[key].lastMove,
-          },
-        };
-
-        setGame((prevGame: GameState) => ({
-          computerCheckers: prevGame.computerCheckers,
-          playerCheckers: newPieces,
-        }));
-      }
-    }
-  }, [game, isEmptySquare, getLeftHopForPlayer, getRightHopForPlayer]);
-
-  const moveChecker = useCallback(
-    (final: number[], id: string) => {
-      const player = game.playerCheckers;
-      const computer = game.computerCheckers;
-
-      const lastMove = getMoveType(player[id].coords, final);
-      let removeCheckerCoords: number[] | null = null;
-      let removeCheckerKey: string | null = null;
-
-      if (lastMove == Move.hopRight) {
-        removeCheckerCoords = [final[0] - 1, final[1] + 1];
-      } else if (lastMove == Move.hopLeft) {
-        removeCheckerCoords = [final[0] + 1, final[1] + 1];
-      }
-
-      if (removeCheckerCoords !== null) {
-        for (const key in computer) {
-          const coords = computer[key].coords;
-          if (
-            coords[0] === removeCheckerCoords[0] &&
-            coords[1] === removeCheckerCoords[1]
-          ) {
-            removeCheckerKey = key;
-          }
-        }
-      }
-
-      const updatedPlayer = {
-        ...player,
-        [id]: {
-          coords: final,
-          leftHopCoords: player[id].leftHopCoords,
-          rightHopCoords: player[id].rightHopCoords,
-          lastMove: lastMove,
-        },
-      };
-
-      if (removeCheckerKey !== null) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { [removeCheckerKey]: removedProperty, ...newComputer } =
-          computer;
-        setGame({
-          playerCheckers: updatedPlayer,
-          computerCheckers: newComputer,
-        });
-      } else {
-        setGame({
-          playerCheckers: updatedPlayer,
-          computerCheckers: computer,
-        });
-      }
-
-      setCpuTurn(true);
-    },
-    [game]
-  );
+  const moveChecker = (final: number[], id: string) => {
+    dispatch({ type: "playerMove", coords: final, id: id });
+    setCpuTurn(true);
+  };
 
   const moveCpu = useCallback(
-    (movePossibility: CpuMovePossibility, id: string) => {
-      const player = game.playerCheckers;
-      const computer = game.computerCheckers;
-
+    async (movePossibility: CpuMovePossibility, id: string) => {
       if (cpuTurn) {
-        setTimeout(function () {
-          const final = movePossibility.dest;
-          const move = movePossibility.move;
-          let removeCheckerCoords: number[] | null = null;
-          let removeCheckerKey: string | null = null;
-
-          if (move == Move.hopRight) {
-            removeCheckerCoords = [final[0] - 1, final[1] - 1];
-          } else if (move == Move.hopLeft) {
-            removeCheckerCoords = [final[0] + 1, final[1] - 1];
-          }
-
-          if (removeCheckerCoords !== null) {
-            for (const key in player) {
-              const coords = player[key].coords;
-              if (
-                coords[0] === removeCheckerCoords[0] &&
-                coords[1] === removeCheckerCoords[1]
-              ) {
-                removeCheckerKey = key;
-              }
-            }
-          }
-
-          const updatedComputer = {
-            ...computer,
-            [id]: {
-              coords: movePossibility.dest,
-              lastMove: movePossibility.move,
-            },
-          };
-
-          if (removeCheckerKey !== null) {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const { [removeCheckerKey]: removedProperty, ...newPlayer } =
-              player;
-            setGame({
-              playerCheckers: newPlayer,
-              computerCheckers: updatedComputer,
-            });
-          } else {
-            setGame({
-              playerCheckers: player,
-              computerCheckers: updatedComputer,
-            });
-          }
-        }, 1500);
+        await timeout(1500);
+        dispatch({
+          type: "cpuMove",
+          movePossibility: movePossibility,
+          id: id,
+        });
       }
 
       setCpuTurn(false);
     },
-    [game, cpuTurn]
+    [cpuTurn]
   );
 
-  const canMoveChecker = useCallback(
-    (final: number[], id: string): boolean => {
-      const player = game.playerCheckers;
-      const initial: number[] = player[id].coords;
-      const leftHopCoords = player[id].leftHopCoords;
-      const rightHopCoords = player[id].rightHopCoords;
+  const canMoveChecker = (final: number[], id: string): boolean => {
+    const player = game.playerCheckers;
+    const initial: number[] = player[id].coords;
+    const leftHopCoords = player[id].leftHopCoords;
+    const rightHopCoords = player[id].rightHopCoords;
 
+    if (
+      leftHopCoords.length > 0 &&
+      leftHopCoords[0] === final[0] &&
+      leftHopCoords[1] === final[1]
+    ) {
+      return true;
+    } else if (
+      rightHopCoords.length > 0 &&
+      rightHopCoords[0] === final[0] &&
+      rightHopCoords[1] === final[1]
+    ) {
+      return true;
+    } else if (
+      leftHopCoords.length > 0 ||
+      rightHopCoords.length > 0 ||
+      isEmptySquare(final) === false
+    ) {
+      return false;
+    } else {
       if (
-        leftHopCoords.length > 0 &&
-        leftHopCoords[0] === final[0] &&
-        leftHopCoords[1] === final[1]
+        (initial[0] + 1 == final[0] && initial[1] - 1 == final[1]) ||
+        (initial[0] - 1 == final[0] && initial[1] - 1 == final[1])
       ) {
         return true;
-      } else if (
-        rightHopCoords.length > 0 &&
-        rightHopCoords[0] === final[0] &&
-        rightHopCoords[1] === final[1]
-      ) {
-        return true;
-      } else if (
-        leftHopCoords.length > 0 ||
-        rightHopCoords.length > 0 ||
-        isEmptySquare(final) === false
-      ) {
-        return false;
       } else {
-        if (
-          (initial[0] + 1 == final[0] && initial[1] - 1 == final[1]) ||
-          (initial[0] - 1 == final[0] && initial[1] - 1 == final[1])
-        ) {
-          return true;
-        } else {
-          return false;
-        }
+        return false;
       }
-    },
-    [isEmptySquare, game]
-  );
+    }
+  };
 
   const fetchRandomCpu = useCallback((): string => {
     const computer = game.computerCheckers;
@@ -361,8 +164,12 @@ function App() {
     [game, isEmptySquare]
   );
 
-  const generateCpuMove = useCallback(() => {
+  const generateCpuMove = useCallback(async () => {
     if (cpuTurn) {
+      // fetch a random computer piece and store all possible moves in an array.
+      // if this array is not empty, perform a move and exit the loop.
+      // if it's empty, refetch a random piece and try again.
+
       let movedPiece = false;
 
       while (movedPiece == false) {
@@ -390,10 +197,14 @@ function App() {
           possiblities.push({ dest: rightHopCoords, move: Move.hopRight });
         }
 
-        for (let i = 0; i < possiblities.length; i++) {
-          moveCpu(possiblities[i], piece);
+        if (possiblities.length > 0) {
+          await moveCpu(
+            possiblities[Math.floor(Math.random() * possiblities.length)],
+            piece
+          );
           movedPiece = true;
-          break;
+        } else {
+          movedPiece = false;
         }
       }
     }
@@ -419,8 +230,6 @@ function App() {
             game={game}
             moveChecker={moveChecker}
             canMoveChecker={canMoveChecker}
-            onHoverChange={onHoverChange}
-            hoverElement={hoverElement}
           />
         </div>
       </div>

@@ -39,8 +39,6 @@ const BoardSquare = ({
     [x, y, moveChecker, canMoveChecker]
   );
 
-  showHoverPreview && console.log(showHoverPreview, x, y);
-
   return (
     <div ref={drop} className="relative w-full h-full">
       <Square dark={dark}>{children}</Square>

@@ -32,7 +32,9 @@ const PlayerPiece = ({ id, onHoverChange }: PieceProps) => {
       onMouseLeave={() => onHover(false)}
       className={`w-14 h-14 rounded-full bg-black ${opacity} cursor-move`}
       style={{ transform: "translate(0, 0)" }}
-    ></div>
+    >
+      <p className="text text-white">{id}</p>
+    </div>
   );
 };
 
@@ -42,7 +44,9 @@ const CpuPiece = ({ id }: CpuProps) => {
       className={`w-14 h-14 rounded-full bg-stone-400`}
       style={{ transform: "translate(0, 0)" }}
       data-testid="cpu-checker"
-    ></div>
+    >
+      <p className="text text-white">{id}</p>
+    </div>
   );
 };
 
