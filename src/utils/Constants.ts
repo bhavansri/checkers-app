@@ -32,6 +32,8 @@ type PlayerPiece = {
 
 type ComputerPiece = {
   coords: number[];
+  leftHopCoords: number[];
+  rightHopCoords: number[];
   lastMove: Move;
 };
 
@@ -111,18 +113,78 @@ const playerCheckers: PlayerPieces = {
 };
 
 const computerCheckers: ComputerPieces = {
-  "1": { coords: [1, 0], lastMove: Move.none },
-  "2": { coords: [3, 0], lastMove: Move.none },
-  "3": { coords: [5, 0], lastMove: Move.none },
-  "4": { coords: [7, 0], lastMove: Move.none },
-  "5": { coords: [0, 1], lastMove: Move.none },
-  "6": { coords: [2, 1], lastMove: Move.none },
-  "7": { coords: [4, 1], lastMove: Move.none },
-  "8": { coords: [6, 1], lastMove: Move.none },
-  "9": { coords: [1, 2], lastMove: Move.none },
-  "10": { coords: [3, 2], lastMove: Move.none },
-  "11": { coords: [5, 2], lastMove: Move.none },
-  "12": { coords: [7, 2], lastMove: Move.none },
+  "1": {
+    coords: [1, 0],
+    leftHopCoords: [],
+    rightHopCoords: [],
+    lastMove: Move.none,
+  },
+  "2": {
+    coords: [3, 0],
+    leftHopCoords: [],
+    rightHopCoords: [],
+    lastMove: Move.none,
+  },
+  "3": {
+    coords: [5, 0],
+    leftHopCoords: [],
+    rightHopCoords: [],
+    lastMove: Move.none,
+  },
+  "4": {
+    coords: [7, 0],
+    leftHopCoords: [],
+    rightHopCoords: [],
+    lastMove: Move.none,
+  },
+  "5": {
+    coords: [0, 1],
+    leftHopCoords: [],
+    rightHopCoords: [],
+    lastMove: Move.none,
+  },
+  "6": {
+    coords: [2, 1],
+    leftHopCoords: [],
+    rightHopCoords: [],
+    lastMove: Move.none,
+  },
+  "7": {
+    coords: [4, 1],
+    leftHopCoords: [],
+    rightHopCoords: [],
+    lastMove: Move.none,
+  },
+  "8": {
+    coords: [6, 1],
+    leftHopCoords: [],
+    rightHopCoords: [],
+    lastMove: Move.none,
+  },
+  "9": {
+    coords: [1, 2],
+    leftHopCoords: [],
+    rightHopCoords: [],
+    lastMove: Move.none,
+  },
+  "10": {
+    coords: [3, 2],
+    leftHopCoords: [],
+    rightHopCoords: [],
+    lastMove: Move.none,
+  },
+  "11": {
+    coords: [5, 2],
+    leftHopCoords: [],
+    rightHopCoords: [],
+    lastMove: Move.none,
+  },
+  "12": {
+    coords: [7, 2],
+    leftHopCoords: [],
+    rightHopCoords: [],
+    lastMove: Move.none,
+  },
 };
 
 export const defaultGame: GameState = {

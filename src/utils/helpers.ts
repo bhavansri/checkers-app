@@ -1,7 +1,7 @@
 import { GameState, Move } from "./constants";
 
 export function isValidBounds(pos: number[]) {
-  if (pos[0] < 0 || pos[0] >= 8 || pos[1] < 0 || pos[0] >= 8) {
+  if (pos[0] < 0 || pos[0] > 7 || pos[1] < 0 || pos[1] > 7) {
     return false;
   } else {
     return true;
@@ -28,7 +28,7 @@ export function checkIfEmpty(game: GameState, destination: number[]): boolean {
   return true;
 }
 
-export function getMoveType(initial: number[], final: number[]) {
+export function getPlayerMoveType(initial: number[], final: number[]) {
   if (initial[0] + 1 === final[0] && final[1] === initial[1] - 1) {
     return Move.right;
   } else if (initial[0] - 1 === final[0] && final[1] === initial[1] - 1) {
@@ -36,6 +36,20 @@ export function getMoveType(initial: number[], final: number[]) {
   } else if (initial[0] + 2 === final[0] && final[1] === initial[1] - 2) {
     return Move.hopRight;
   } else if (initial[0] - 2 === final[0] && final[1] === initial[1] - 2) {
+    return Move.hopLeft;
+  } else {
+    return Move.none;
+  }
+}
+
+export function getComputerMoveType(initial: number[], final: number[]) {
+  if (initial[0] + 1 === final[0] && final[1] === initial[1] + 1) {
+    return Move.right;
+  } else if (initial[0] - 1 === final[0] && final[1] === initial[1] + 1) {
+    return Move.left;
+  } else if (initial[0] + 2 === final[0] && final[1] === initial[1] + 2) {
+    return Move.hopRight;
+  } else if (initial[0] - 2 === final[0] && final[1] === initial[1] + 2) {
     return Move.hopLeft;
   } else {
     return Move.none;

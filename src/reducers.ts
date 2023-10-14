@@ -1,14 +1,18 @@
 import {
-  CpuMovePossibility,
+  ComputerPieces,
   GameState,
   Move,
   PlayerPieces,
 } from "./utils/constants";
-import { checkIfEmpty, getMoveType, isValidBounds } from "./utils/helpers";
+import {
+  checkIfEmpty,
+  getComputerMoveType,
+  getPlayerMoveType,
+  isValidBounds,
+} from "./utils/helpers";
 
 type GameAction = {
   type: "cpuMove" | "playerMove";
-  movePossibility?: CpuMovePossibility;
   coords?: number[];
   id: string;
 };
@@ -16,8 +20,8 @@ type GameAction = {
 export function gameReducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
     case "cpuMove":
-      if (action.movePossibility && action.id) {
-        return moveCpu(state, action.movePossibility, action.id);
+      if (action.coords && action.id) {
+        return moveCpu(state, action.coords, action.id);
       } else {
         return state;
       }
@@ -33,18 +37,19 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
 }
 
 function movePlayer(game: GameState, final: number[], id: string) {
+  let newGame: GameState;
   const player = game.playerCheckers;
   const computer = game.computerCheckers;
 
-  const lastMove = getMoveType(player[id].coords, final);
+  const move = getPlayerMoveType(player[id].coords, final);
   let removeCheckerCoords: number[] | null = null;
   let removeCheckerKey: string | null = null;
 
-  // if the last move was a hop, remove the correct opponent piece
+  // if this move was a hop, remove the correct opponent piece
 
-  if (lastMove == Move.hopRight) {
+  if (move == Move.hopRight) {
     removeCheckerCoords = [final[0] - 1, final[1] + 1];
-  } else if (lastMove == Move.hopLeft) {
+  } else if (move == Move.hopLeft) {
     removeCheckerCoords = [final[0] + 1, final[1] + 1];
   }
 
@@ -60,7 +65,7 @@ function movePlayer(game: GameState, final: number[], id: string) {
     }
   }
 
-  // update the possible left/right hop coordinates for this piece
+  // update the left/right hop coordinates for this piece
   const leftHopCoords: number[] = getLeftHopForPlayer(game, final);
   const rightHopCoords: number[] = getRightHopForPlayer(game, final);
 
@@ -70,38 +75,40 @@ function movePlayer(game: GameState, final: number[], id: string) {
       coords: final,
       leftHopCoords: leftHopCoords,
       rightHopCoords: rightHopCoords,
-      lastMove: lastMove,
+      lastMove: move,
     },
   };
 
   if (removeCheckerKey !== null) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { [removeCheckerKey]: removedProperty, ...newComputer } = computer;
-    return {
+    newGame = {
       playerCheckers: updatedPlayer,
       computerCheckers: newComputer,
     };
   } else {
-    return {
+    newGame = {
       playerCheckers: updatedPlayer,
       computerCheckers: computer,
     };
   }
+
+  newGame.computerCheckers = updateComputerHops(newGame);
+
+  return newGame;
 }
 
-function moveCpu(
-  game: GameState,
-  movePossibility: CpuMovePossibility,
-  id: string
-) {
+function moveCpu(game: GameState, final: number[], id: string) {
   let newGame: GameState;
   const player = game.playerCheckers;
   const computer = game.computerCheckers;
 
-  const final = movePossibility.dest;
-  const move = movePossibility.move;
+  const move = getComputerMoveType(computer[id].coords, final);
   let removeCheckerCoords: number[] | null = null;
   let removeCheckerKey: string | null = null;
+
+  // if this move was a hop, remove the correct player piece
+  console.log("Move" + move);
 
   if (move == Move.hopRight) {
     removeCheckerCoords = [final[0] - 1, final[1] - 1];
@@ -121,11 +128,20 @@ function moveCpu(
     }
   }
 
+  console.log("Remove coords: " + removeCheckerCoords);
+  console.log("Players: " + JSON.stringify(player));
+
+  // update the left/right hop coordinates for this piece
+  const leftHopCoords: number[] = getLeftHopForCPU(game, final);
+  const rightHopCoords: number[] = getRightHopForCPU(game, final);
+
   const updatedComputer = {
     ...computer,
     [id]: {
-      coords: movePossibility.dest,
-      lastMove: movePossibility.move,
+      coords: final,
+      leftHopCoords: leftHopCoords,
+      rightHopCoords: rightHopCoords,
+      lastMove: move,
     },
   };
 
@@ -144,6 +160,7 @@ function moveCpu(
     };
   }
 
+  // since computer pieces changed, update all affected player pieces
   newGame.playerCheckers = updatePlayerHops(newGame);
 
   return newGame;
@@ -177,6 +194,36 @@ function updatePlayerHops(newGame: GameState): PlayerPieces {
   }
 
   return newPlayerPieces;
+}
+
+function updateComputerHops(newGame: GameState): ComputerPieces {
+  let newComputerPieces: ComputerPieces = newGame.computerCheckers;
+
+  for (const id in newComputerPieces) {
+    const computer = newComputerPieces[id];
+    const coords = computer.coords;
+    const currLeftHopCoords = computer.leftHopCoords;
+    const currRightHopCoords = computer.rightHopCoords;
+    const leftHopCoords: number[] = getLeftHopForCPU(newGame, coords);
+    const rightHopCoords: number[] = getRightHopForCPU(newGame, coords);
+
+    if (
+      leftHopCoords.length !== currLeftHopCoords.length ||
+      rightHopCoords.length !== currRightHopCoords.length
+    ) {
+      newComputerPieces = {
+        ...newComputerPieces,
+        [id]: {
+          coords: coords,
+          leftHopCoords: leftHopCoords,
+          rightHopCoords: rightHopCoords,
+          lastMove: computer.lastMove,
+        },
+      };
+    }
+  }
+
+  return newComputerPieces;
 }
 
 const getLeftHopForPlayer = (game: GameState, coords: number[]): number[] => {
@@ -225,6 +272,60 @@ const getRightHopForPlayer = (game: GameState, coords: number[]): number[] => {
       cpuCoords[0] + 1 === rightHopCoords[0] &&
       coords[1] - 1 === cpuCoords[1] &&
       cpuCoords[1] - 1 === rightHopCoords[1]
+    ) {
+      return rightHopCoords;
+    }
+  }
+
+  return [];
+};
+
+const getLeftHopForCPU = (game: GameState, coords: number[]): number[] => {
+  const leftHopCoords = [coords[0] - 2, coords[1] + 2];
+  const player = game.playerCheckers;
+
+  if (
+    isValidBounds(leftHopCoords) === false ||
+    isEmptySquare(game, leftHopCoords) === false
+  ) {
+    return [];
+  }
+
+  for (const key in player) {
+    const playerCoords = player[key].coords;
+
+    if (
+      coords[0] - 1 === playerCoords[0] &&
+      playerCoords[0] - 1 === leftHopCoords[0] &&
+      coords[1] + 1 === playerCoords[1] &&
+      playerCoords[1] + 1 === leftHopCoords[1]
+    ) {
+      return leftHopCoords;
+    }
+  }
+
+  return [];
+};
+
+const getRightHopForCPU = (game: GameState, coords: number[]): number[] => {
+  const rightHopCoords = [coords[0] + 2, coords[1] + 2];
+  const player = game.playerCheckers;
+
+  if (
+    isValidBounds(rightHopCoords) === false ||
+    isEmptySquare(game, rightHopCoords) === false
+  ) {
+    return [];
+  }
+
+  for (const key in player) {
+    const playerCoords = player[key].coords;
+
+    if (
+      coords[0] + 1 === playerCoords[0] &&
+      playerCoords[0] + 1 === rightHopCoords[0] &&
+      coords[1] + 1 === playerCoords[1] &&
+      playerCoords[1] + 1 === rightHopCoords[1]
     ) {
       return rightHopCoords;
     }
