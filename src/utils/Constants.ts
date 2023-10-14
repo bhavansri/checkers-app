@@ -15,11 +15,6 @@ export interface GameState {
   computerCheckers: ComputerPieces;
 }
 
-export type CpuMovePossibility = {
-  dest: number[];
-  move: Move;
-};
-
 export type PlayerPieces = { [id: string]: PlayerPiece };
 export type ComputerPieces = { [id: string]: ComputerPiece };
 
