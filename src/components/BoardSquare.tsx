@@ -40,7 +40,12 @@ const BoardSquare = ({
   );
 
   return (
-    <div ref={drop} className="relative w-full h-full">
+    <div
+      ref={drop}
+      className="relative w-full h-full"
+      role="Square"
+      data-testid={`(${x},${y})`}
+    >
       <Square dark={dark}>{children}</Square>
       {(showHoverPreview || (!isOver && canDrop)) && (
         <div

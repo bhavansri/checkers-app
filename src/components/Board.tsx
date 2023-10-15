@@ -1,12 +1,17 @@
 import BoardSquare from "./BoardSquare";
 import { CpuPiece, PlayerPiece } from "./CheckerPiece";
 import { ComputerPieces, GameState, PlayerPieces } from "../utils/constants";
-import { useState } from "react";
+import { useEffect, useReducer, useState } from "react";
+import { timeout } from "../utils/helpers";
+import {
+  fetchRandomCpuChecker,
+  generateCpuDestination,
+} from "../utils/cpuServices";
+import { gameReducer } from "../utils/reducers";
+import { canMoveChecker } from "../utils/playerServices";
 
 type BoardProps = {
-  game: GameState;
-  moveChecker: (final: number[], id: string) => void;
-  canMoveChecker: (final: number[], id: string) => boolean;
+  initialGame: GameState;
 };
 
 function renderSquare(
@@ -93,13 +98,56 @@ function renderSquare(
   );
 }
 
-const Board = ({ game, moveChecker, canMoveChecker }: BoardProps) => {
+const Board = ({ initialGame }: BoardProps) => {
   const squares = [];
   const [hoverElement, setHoverElement] = useState<string | null>(null);
+  const [cpuTurn, setCpuTurn] = useState(false);
+  const [game, dispatch] = useReducer(gameReducer, initialGame);
 
   const onHoverChange = (isHovering: boolean, itemId: string) => {
     isHovering ? setHoverElement(itemId) : setHoverElement(null);
   };
+
+  const moveChecker = (final: number[], id: string) => {
+    if (!cpuTurn) {
+      dispatch({ type: "playerMove", coords: final, id: id });
+      setCpuTurn(true);
+    }
+  };
+
+  const handleCanMove = (final: number[], id: string): boolean => {
+    if (!cpuTurn) {
+      return canMoveChecker(game, final, id);
+    } else {
+      return false;
+    }
+  };
+
+  useEffect(() => {
+    async function randomize() {
+      if (cpuTurn) {
+        await timeout(1500);
+        let movedPiece = false;
+
+        while (movedPiece == false) {
+          const cpuID: string = fetchRandomCpuChecker(game);
+          const destination: number[] = generateCpuDestination(game, cpuID);
+
+          if (destination.length > 0) {
+            dispatch({
+              type: "cpuMove",
+              coords: destination,
+              id: cpuID,
+            });
+            movedPiece = true;
+          }
+        }
+        setCpuTurn(false);
+      }
+    }
+
+    randomize();
+  }, [game, cpuTurn]);
 
   for (let i = 0; i < 64; i++) {
     squares.push(
@@ -107,7 +155,7 @@ const Board = ({ game, moveChecker, canMoveChecker }: BoardProps) => {
         i,
         game,
         moveChecker,
-        canMoveChecker,
+        handleCanMove,
         hoverElement,
         onHoverChange
       )
