@@ -13,9 +13,45 @@ type GameProps = {
   gameState: GameState;
 };
 
+enum StorageKeys {
+  game = "game",
+  cpuTurn = "cpuTurn",
+}
+
+const fetchExistingGameState = (): GameState | null => {
+  let savedGame: GameState;
+  const localGameState: string | null = localStorage.getItem(StorageKeys.game);
+
+  if (localGameState) {
+    savedGame = JSON.parse(localGameState);
+  } else {
+    return null;
+  }
+
+  return savedGame;
+};
+
+const fetchExistingTurnState = (): boolean | null => {
+  let cpuTurn: boolean;
+  const localTurnState: string | null = localStorage.getItem(
+    StorageKeys.cpuTurn
+  );
+
+  if (localTurnState) {
+    cpuTurn = JSON.parse(localTurnState);
+  } else {
+    return null;
+  }
+
+  return cpuTurn;
+};
+
 function Game({ gameState }: GameProps) {
-  const [cpuTurn, setCpuTurn] = useState(false);
-  const [game, dispatch] = useReducer(gameReducer, gameState);
+  const [cpuTurn, setCpuTurn] = useState(fetchExistingTurnState() ?? false);
+  const [game, dispatch] = useReducer(
+    gameReducer,
+    fetchExistingGameState() ?? gameState
+  );
 
   const moveChecker = (final: number[], id: string) => {
     if (!cpuTurn) {
@@ -30,6 +66,11 @@ function Game({ gameState }: GameProps) {
     } else {
       return false;
     }
+  };
+
+  const handleOnReset = () => {
+    dispatch({ type: "resetGame" });
+    setCpuTurn(false);
   };
 
   useEffect(() => {
@@ -56,10 +97,19 @@ function Game({ gameState }: GameProps) {
     }
 
     randomize();
+
+    localStorage.setItem(StorageKeys.game, JSON.stringify(game));
+    localStorage.setItem(StorageKeys.cpuTurn, JSON.stringify(cpuTurn));
   }, [game, cpuTurn]);
 
   return (
-    <div>
+    <div className="m-5">
+      <button
+        className="text-white bg-gray-800 hover:bg-gray-900 rounded-lg px-5 py-2.5 mr-2 mb-2"
+        onClick={handleOnReset}
+      >
+        Reset Game
+      </button>
       <div style={{ height: "500px", width: "500px" }}>
         <Board
           gameState={game}

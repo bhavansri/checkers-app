@@ -8,13 +8,13 @@ import {
   getRightHopForPlayer,
   updatePlayerHops,
 } from "./playerServices";
-import { GameState, Move } from "./constants";
+import { GameState, Move, defaultGame } from "./constants";
 import { getComputerMoveType, getPlayerMoveType } from "./helpers";
 
 type GameAction = {
-  type: "cpuMove" | "playerMove";
+  type: "cpuMove" | "playerMove" | "resetGame";
   coords?: number[];
-  id: string;
+  id?: string;
 };
 
 export function gameReducer(state: GameState, action: GameAction): GameState {
@@ -31,11 +31,17 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       } else {
         return state;
       }
+    case "resetGame":
+      return resetGame();
     default:
       return state;
   }
 }
 
+function resetGame() {
+  localStorage.clear();
+  return defaultGame;
+}
 function movePlayer(game: GameState, final: number[], id: string) {
   let newGame: GameState;
   const player = game.playerCheckers;

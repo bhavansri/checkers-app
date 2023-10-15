@@ -24,6 +24,7 @@ describe("Checkers App Tests", () => {
   describe("setup initial state", () => {
     let gameState: GameState;
     beforeEach(() => {
+      window.localStorage.clear();
       gameState = defaultGame;
       renderGame(gameState);
     });
@@ -149,6 +150,7 @@ describe("Checkers App Tests", () => {
     let gameState: GameState;
 
     beforeEach(() => {
+      window.localStorage.clear();
       gameState = defaultGame;
     });
 
@@ -195,6 +197,7 @@ describe("Checkers App Tests", () => {
     let gameState: GameState;
 
     beforeEach(() => {
+      window.localStorage.clear();
       gameState = defaultGame;
     });
 
@@ -234,6 +237,7 @@ describe("Checkers App Tests", () => {
   describe("move player checker by 1-square", () => {
     let gameState: GameState;
     beforeEach(() => {
+      window.localStorage.clear();
       gameState = defaultGame;
       renderGame(gameState);
     });
@@ -275,6 +279,7 @@ describe("Checkers App Tests", () => {
     let hopPlayerState: GameState;
 
     beforeEach(() => {
+      window.localStorage.clear();
       hopPlayerState = {
         playerCheckers: {
           "1": {
@@ -318,6 +323,7 @@ describe("Checkers App Tests", () => {
     let hopPlayerState: GameState;
 
     beforeEach(() => {
+      window.localStorage.clear();
       hopPlayerState = {
         playerCheckers: {
           "1": {
