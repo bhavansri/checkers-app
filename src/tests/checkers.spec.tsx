@@ -7,18 +7,17 @@ import {
   within,
 } from "@testing-library/react";
 import { fireDragDrop, wrapWithBackend } from "react-dnd-test-utils";
-
-import Board from "../components/Board";
 import { GameState, Move, defaultGame } from "../utils/constants";
 import {
   fetchRandomCpuChecker,
   generateCpuDestination,
 } from "../utils/cpuServices";
+import Game from "../components/Game";
 
-const TestBoard = wrapWithBackend(Board);
+const TestBoard = wrapWithBackend(Game);
 
 function renderGame(game: GameState): RenderResult {
-  return render(<TestBoard initialGame={game} />);
+  return render(<TestBoard gameState={game} />);
 }
 
 describe("Checkers App Tests", () => {
