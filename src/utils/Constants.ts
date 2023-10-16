@@ -2,6 +2,12 @@ export const ItemTypes = {
   CHECKER: "checker",
 };
 
+export enum StorageKeys {
+  game = "game",
+  cpuTurn = "cpuTurn",
+  timer = "timer",
+}
+
 export enum Move {
   none = "NONE",
   left = "LEFT",

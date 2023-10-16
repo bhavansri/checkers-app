@@ -1,56 +1,29 @@
 import { useEffect, useReducer, useState } from "react";
 import { gameReducer } from "../utils/reducers";
 import { canMoveChecker } from "../utils/playerServices";
-import { timeout } from "../utils/helpers";
+import { fetchLocalCache, timeout } from "../utils/helpers";
 import {
   fetchRandomCpuChecker,
   generateCpuDestination,
 } from "../utils/cpuServices";
 import Board from "./Board";
-import { GameState } from "../utils/constants";
+import { GameState, StorageKeys } from "../utils/constants";
+import Timer from "./Timer";
 
 type GameProps = {
   gameState: GameState;
 };
 
-enum StorageKeys {
-  game = "game",
-  cpuTurn = "cpuTurn",
-}
-
-const fetchExistingGameState = (): GameState | null => {
-  let savedGame: GameState;
-  const localGameState: string | null = localStorage.getItem(StorageKeys.game);
-
-  if (localGameState) {
-    savedGame = JSON.parse(localGameState);
-  } else {
-    return null;
-  }
-
-  return savedGame;
-};
-
-const fetchExistingTurnState = (): boolean | null => {
-  let cpuTurn: boolean;
-  const localTurnState: string | null = localStorage.getItem(
-    StorageKeys.cpuTurn
-  );
-
-  if (localTurnState) {
-    cpuTurn = JSON.parse(localTurnState);
-  } else {
-    return null;
-  }
-
-  return cpuTurn;
-};
-
 function Game({ gameState }: GameProps) {
-  const [cpuTurn, setCpuTurn] = useState(fetchExistingTurnState() ?? false);
+  const [cpuTurn, setCpuTurn] = useState(
+    fetchLocalCache(StorageKeys.cpuTurn) ?? false
+  );
   const [game, dispatch] = useReducer(
     gameReducer,
-    fetchExistingGameState() ?? gameState
+    fetchLocalCache(StorageKeys.game) ?? gameState
+  );
+  const [startTime, setStartTime] = useState<string>(
+    fetchLocalCache(StorageKeys.timer) ?? new Date().toString()
   );
 
   const moveChecker = (final: number[], id: string) => {
@@ -79,6 +52,7 @@ function Game({ gameState }: GameProps) {
   const handleOnReset = () => {
     dispatch({ type: "resetGame" });
     setCpuTurn(false);
+    setStartTime(new Date().toString());
   };
 
   useEffect(() => {
@@ -113,6 +87,10 @@ function Game({ gameState }: GameProps) {
     localStorage.setItem(StorageKeys.cpuTurn, JSON.stringify(cpuTurn));
   }, [game, cpuTurn]);
 
+  useEffect(() => {
+    localStorage.setItem(StorageKeys.timer, JSON.stringify(startTime));
+  }, [startTime]);
+
   return (
     <div className="m-5">
       <div className="flex items-start gap-10 mb-5">
@@ -120,7 +98,7 @@ function Game({ gameState }: GameProps) {
           className="text-white bg-gray-800 hover:bg-gray-900 rounded-lg px-5 py-2.5"
           onClick={handleOnReset}
         >
-          Reset Game
+          Reset
         </button>
         <div className="flex gap-5">
           <div className="flex flex-col items-center gap-2">
@@ -171,6 +149,8 @@ function Game({ gameState }: GameProps) {
             </button>
             <p className="uppercase text-sm font-semibold">Redo</p>
           </div>
+
+          <Timer startTime={startTime} />
         </div>
       </div>
       <div style={{ height: "500px", width: "500px" }}>

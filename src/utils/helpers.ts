@@ -1,4 +1,4 @@
-import { GameCheckers, Move } from "./constants";
+import { GameCheckers, Move, StorageKeys } from "./constants";
 
 export function isValidBounds(pos: number[]) {
   if (pos[0] < 0 || pos[0] > 7 || pos[1] < 0 || pos[1] > 7) {
@@ -61,4 +61,17 @@ export function getComputerMoveType(initial: number[], final: number[]) {
 
 export function timeout(delay: number) {
   return new Promise((res) => setTimeout(res, delay));
+}
+
+export function fetchLocalCache<T>(key: StorageKeys): T | null {
+  let savedState: T;
+  const localState: string | null = localStorage.getItem(key);
+
+  if (localState) {
+    savedState = JSON.parse(localState);
+  } else {
+    return null;
+  }
+
+  return savedState;
 }
