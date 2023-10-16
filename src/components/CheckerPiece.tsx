@@ -26,8 +26,7 @@ const PlayerPiece = ({ id, onHoverChange }: PieceProps) => {
       ref={drag}
       onMouseEnter={() => onHover(true)}
       onMouseLeave={() => onHover(false)}
-      className={`w-14 h-14 rounded-full bg-black ${opacity} cursor-move`}
-      style={{ transform: "translate(0, 0)" }}
+      className={`w-14 h-14 rounded-full bg-black ${opacity} cursor-move translate-x-0 translate-y-0`}
       data-testid="player-checker"
     ></div>
   );
@@ -36,8 +35,7 @@ const PlayerPiece = ({ id, onHoverChange }: PieceProps) => {
 const CpuPiece = () => {
   return (
     <div
-      className={`w-14 h-14 rounded-full bg-red-600`}
-      style={{ transform: "translate(0, 0)" }}
+      className={`w-14 h-14 rounded-full bg-red-600 translate-x-0 translate-y-0`}
       data-testid="cpu-checker"
     ></div>
   );

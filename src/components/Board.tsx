@@ -56,20 +56,8 @@ function renderSquare(
     return "";
   }
 
-  function getCpuIdForPiece(dict: ComputerPieces): string {
-    for (const key in dict) {
-      const val: number[] = dict[key].coords;
-
-      if (val[0] === x && val[1] === y) {
-        return key;
-      }
-    }
-
-    return "";
-  }
-
   return (
-    <div key={i} style={{ width: "12.5%", height: "12.5%" }}>
+    <div key={i} className="w-[12.5%] h-[12.5%]">
       <BoardSquare
         x={x}
         y={y}
@@ -84,9 +72,7 @@ function renderSquare(
               onHoverChange={onHoverChange}
             />
           ) : null}
-          {showCpuChecker(game.present.computerCheckers) ? (
-            <CpuPiece id={getCpuIdForPiece(game.present.computerCheckers)} />
-          ) : null}
+          {showCpuChecker(game.present.computerCheckers) ? <CpuPiece /> : null}
         </>
       </BoardSquare>
     </div>

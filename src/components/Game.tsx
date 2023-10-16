@@ -103,7 +103,7 @@ function Game({ gameState }: GameProps) {
         >
           Reset
         </button>
-        <div className="flex gap-10" style={{ width: "500px" }}>
+        <div className="flex gap-10 w-[500px]">
           <div className="flex flex-col items-center gap-2">
             <button
               onClick={handleUndo}
@@ -160,7 +160,7 @@ function Game({ gameState }: GameProps) {
           <Timer startTime={startTime} />
         </div>
       </div>
-      <div style={{ height: "500px", width: "500px" }}>
+      <div className="h-[500px] w-[500px]">
         <Board
           gameState={game}
           moveChecker={moveChecker}

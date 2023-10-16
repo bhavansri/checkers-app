@@ -48,32 +48,10 @@ const BoardSquare = ({
     >
       <Square dark={dark}>{children}</Square>
       {(showHoverPreview || (!isOver && canDrop)) && (
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            height: "100%",
-            width: "100%",
-            zIndex: 1,
-            opacity: 0.5,
-            backgroundColor: "yellow",
-          }}
-        />
+        <div className="absolute top-0 left-0 h-full w-full z-[1] opacity-50 bg-yellow-300" />
       )}
       {isOver && canDrop && (
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            height: "100%",
-            width: "100%",
-            zIndex: 1,
-            opacity: 0.5,
-            backgroundColor: "green",
-          }}
-        />
+        <div className="absolute top-0 left-0 h-full w-full z-[1] opacity-50 bg-green-500" />
       )}
     </div>
   );
