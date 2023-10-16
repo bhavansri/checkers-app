@@ -26,6 +26,9 @@ function Game({ gameState }: GameProps) {
     fetchLocalCache(StorageKeys.timer) ?? new Date().toString()
   );
 
+  const computerScore = 12 - Object.keys(game.present.playerCheckers).length;
+  const playerScore = 12 - Object.keys(game.present.computerCheckers).length;
+
   const moveChecker = (final: number[], id: string) => {
     if (!cpuTurn) {
       dispatch({ type: "playerMove", coords: final, id: id });
@@ -100,7 +103,7 @@ function Game({ gameState }: GameProps) {
         >
           Reset
         </button>
-        <div className="flex gap-5">
+        <div className="flex gap-10" style={{ width: "500px" }}>
           <div className="flex flex-col items-center gap-2">
             <button
               onClick={handleUndo}
@@ -149,7 +152,11 @@ function Game({ gameState }: GameProps) {
             </button>
             <p className="uppercase text-sm font-semibold">Redo</p>
           </div>
-
+          <div className="text-3xl font-semibold flex gap-4">
+            <p className="text-black">{playerScore}</p>
+            <p className="text-gray-500">-</p>
+            <p className="text-red-600">{computerScore}</p>
+          </div>
           <Timer startTime={startTime} />
         </div>
       </div>

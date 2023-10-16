@@ -26,9 +26,7 @@ const Timer = ({ startTime }: TimerProps) => {
     return () => clearInterval(interval);
   }, [getTime]);
 
-  return (
-    <div className="uppercase font-semibold text-3xl">{`${parsedTime}`}</div>
-  );
+  return <div className="uppercase text-3xl">{`${parsedTime}`}</div>;
 };
 
 export default Timer;

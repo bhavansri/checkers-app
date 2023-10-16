@@ -6,10 +6,6 @@ type PieceProps = {
   onHoverChange: (isHovering: boolean, itemId: string) => void;
 };
 
-type CpuProps = {
-  id: string;
-};
-
 const PlayerPiece = ({ id, onHoverChange }: PieceProps) => {
   const [{ isDragging }, drag] = useDrag(() => ({
     type: ItemTypes.CHECKER,
@@ -37,10 +33,10 @@ const PlayerPiece = ({ id, onHoverChange }: PieceProps) => {
   );
 };
 
-const CpuPiece = ({ id }: CpuProps) => {
+const CpuPiece = () => {
   return (
     <div
-      className={`w-14 h-14 rounded-full bg-stone-400`}
+      className={`w-14 h-14 rounded-full bg-red-600`}
       style={{ transform: "translate(0, 0)" }}
       data-testid="cpu-checker"
     ></div>
