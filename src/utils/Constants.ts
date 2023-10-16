@@ -25,6 +25,8 @@ export type GameState = {
 export type GameCheckers = {
   playerCheckers: PlayerCheckers;
   computerCheckers: ComputerCheckers;
+  playerMoveCount: number;
+  cpuMoveCount: number;
 };
 
 export type PlayerCheckers = { [id: string]: PlayerChecker };
@@ -199,6 +201,8 @@ export const initialGameState: GameState = {
   present: {
     playerCheckers: playerCheckers,
     computerCheckers: computerCheckers,
+    playerMoveCount: 0,
+    cpuMoveCount: 0,
   },
   future: [],
 };

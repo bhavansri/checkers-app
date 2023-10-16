@@ -166,6 +166,10 @@ function Game({ gameState }: GameProps) {
           <Timer startTime={startTime} />
         </div>
       </div>
+      <div className="mb-5 text-blue-700 font-semibold">
+        <p data-testid="player-move-count">{`# of player moves: ${game.present.playerMoveCount}`}</p>
+        <p data-testid="cpu-move-count">{`# of computer moves: ${game.present.cpuMoveCount}`}</p>
+      </div>
       <div className="h-[500px] w-[500px]">
         <Board
           gameState={game}

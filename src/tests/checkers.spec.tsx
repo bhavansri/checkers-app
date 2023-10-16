@@ -189,6 +189,8 @@ describe("Checkers App Tests", () => {
               lastMove: Move.none,
             },
           },
+          playerMoveCount: 0,
+          cpuMoveCount: 0,
         },
         future: [],
       };
@@ -238,6 +240,8 @@ describe("Checkers App Tests", () => {
               lastMove: Move.none,
             },
           },
+          cpuMoveCount: 0,
+          playerMoveCount: 0,
         },
         future: [],
       };
@@ -314,6 +318,8 @@ describe("Checkers App Tests", () => {
               lastMove: Move.none,
             },
           },
+          playerMoveCount: 0,
+          cpuMoveCount: 0,
         },
         future: [],
       };
@@ -362,6 +368,8 @@ describe("Checkers App Tests", () => {
               lastMove: Move.none,
             },
           },
+          playerMoveCount: 0,
+          cpuMoveCount: 0,
         },
         future: [],
       };
@@ -460,6 +468,8 @@ describe("Checkers App Tests", () => {
               lastMove: Move.none,
             },
           },
+          playerMoveCount: 0,
+          cpuMoveCount: 0,
         },
         future: [],
       };
@@ -475,6 +485,30 @@ describe("Checkers App Tests", () => {
 
       expect(computerScore).toHaveTextContent("11");
       expect(playerScore).toHaveTextContent("10");
+    });
+  });
+
+  describe("display correct # of player moves", () => {
+    let gameState: GameState;
+    beforeEach(() => {
+      window.localStorage.clear();
+      gameState = initialGameState;
+      renderGame(gameState);
+    });
+
+    afterEach(cleanup);
+
+    it("should display a count of 1 for player after single move", async () => {
+      const checker = within(screen.getByTestId("(2,5)")).getByTestId(
+        "player-checker"
+      );
+      const targetSquare = screen.getByTestId("(1,4)");
+
+      await fireDragDrop(checker, targetSquare);
+
+      expect(screen.getByTestId("player-move-count")).toHaveTextContent(
+        "# of player moves: 1"
+      );
     });
   });
 });

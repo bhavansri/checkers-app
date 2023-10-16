@@ -143,11 +143,15 @@ function movePlayer(
     newGame = {
       playerCheckers: updatedPlayer,
       computerCheckers: newComputer,
+      playerMoveCount: game.playerMoveCount + 1,
+      cpuMoveCount: game.cpuMoveCount,
     };
   } else {
     newGame = {
       playerCheckers: updatedPlayer,
       computerCheckers: computer,
+      playerMoveCount: game.playerMoveCount + 1,
+      cpuMoveCount: game.cpuMoveCount,
     };
   }
 
@@ -209,11 +213,15 @@ function moveCpu(
     newGame = {
       playerCheckers: newPlayer,
       computerCheckers: updatedComputer,
+      playerMoveCount: game.playerMoveCount,
+      cpuMoveCount: game.cpuMoveCount + 1,
     };
   } else {
     newGame = {
       playerCheckers: player,
       computerCheckers: updatedComputer,
+      playerMoveCount: game.playerMoveCount,
+      cpuMoveCount: game.cpuMoveCount + 1,
     };
   }
 
