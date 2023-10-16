@@ -1,28 +1,32 @@
 import BoardSquare from "./BoardSquare";
 import { CpuPiece, PlayerPiece } from "./CheckerPiece";
-import { ComputerPieces, GameState, PlayerPieces } from "../utils/constants";
+import {
+  ComputerCheckers,
+  GameState,
+  PlayerCheckers,
+} from "../utils/constants";
 import { useState } from "react";
 
 type BoardProps = {
   gameState: GameState;
-  moveChecker: (final: number[], id: string) => void;
-  handleCanMove: (final: number[], id: string) => boolean;
+  movePlayer: (final: number[], id: string) => void;
+  handleCanMovePlayer: (final: number[], id: string) => boolean;
 };
 
 function renderSquare(
   i: number,
   game: GameState,
-  moveChecker: (final: number[], id: string) => void,
-  canMoveChecker: (final: number[], id: string) => boolean,
+  movePlayer: (final: number[], id: string) => void,
+  canMovePlayer: (final: number[], id: string) => boolean,
   hoveringId: string | null,
   onHoverChange: (isHovering: boolean, itemId: string) => void
 ) {
   const x = i % 8;
   const y = Math.floor(i / 8);
 
-  function showChecker(dict: ComputerPieces): boolean {
-    for (const key in dict) {
-      const val: number[] = dict[key].coords;
+  function showPlayerChecker(checkers: PlayerCheckers): boolean {
+    for (const key in checkers) {
+      const val: number[] = checkers[key].coords;
 
       if (val[0] === x && val[1] === y) {
         return true;
@@ -32,9 +36,9 @@ function renderSquare(
     return false;
   }
 
-  function showCpuChecker(dict: ComputerPieces): boolean {
-    for (const key in dict) {
-      const val: number[] = dict[key].coords;
+  function showCpuChecker(checkers: ComputerCheckers): boolean {
+    for (const key in checkers) {
+      const val: number[] = checkers[key].coords;
 
       if (val[0] === x && val[1] === y) {
         return true;
@@ -44,9 +48,9 @@ function renderSquare(
     return false;
   }
 
-  function getIdForPiece(dict: PlayerPieces): string {
-    for (const key in dict) {
-      const val: number[] = dict[key].coords;
+  function getIdForChecker(checkers: PlayerCheckers): string {
+    for (const key in checkers) {
+      const val: number[] = checkers[key].coords;
 
       if (val[0] === x && val[1] === y) {
         return key;
@@ -61,14 +65,14 @@ function renderSquare(
       <BoardSquare
         x={x}
         y={y}
-        moveChecker={moveChecker}
-        canMoveChecker={canMoveChecker}
+        movePlayer={movePlayer}
+        canMovePlayer={canMovePlayer}
         hoveringId={hoveringId}
       >
         <>
-          {showChecker(game.present.playerCheckers) ? (
+          {showPlayerChecker(game.present.playerCheckers) ? (
             <PlayerPiece
-              id={getIdForPiece(game.present.playerCheckers)}
+              id={getIdForChecker(game.present.playerCheckers)}
               onHoverChange={onHoverChange}
             />
           ) : null}
@@ -79,7 +83,7 @@ function renderSquare(
   );
 }
 
-const Board = ({ gameState, moveChecker, handleCanMove }: BoardProps) => {
+const Board = ({ gameState, movePlayer, handleCanMovePlayer }: BoardProps) => {
   const squares = [];
   const [hoverElement, setHoverElement] = useState<string | null>(null);
 
@@ -92,8 +96,8 @@ const Board = ({ gameState, moveChecker, handleCanMove }: BoardProps) => {
       renderSquare(
         i,
         gameState,
-        moveChecker,
-        handleCanMove,
+        movePlayer,
+        handleCanMovePlayer,
         hoverElement,
         onHoverChange
       )

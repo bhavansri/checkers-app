@@ -5,8 +5,8 @@ import { ItemTypes } from "../utils/constants";
 type BoardSquareProps = {
   x: number;
   y: number;
-  moveChecker: (final: number[], id: string) => void;
-  canMoveChecker: (final: number[], id: string) => boolean;
+  movePlayer: (final: number[], id: string) => void;
+  canMovePlayer: (final: number[], id: string) => boolean;
   hoveringId: string | null;
   children: JSX.Element | null;
 };
@@ -18,25 +18,25 @@ export type DropItemProps = {
 const BoardSquare = ({
   x,
   y,
-  moveChecker,
-  canMoveChecker,
+  movePlayer,
+  canMovePlayer,
   hoveringId,
   children,
 }: BoardSquareProps) => {
   const dark = (x + y) % 2 === 1;
   const showHoverPreview =
-    hoveringId !== null ? canMoveChecker([x, y], hoveringId) : false;
+    hoveringId !== null ? canMovePlayer([x, y], hoveringId) : false;
   const [{ isOver, canDrop }, drop] = useDrop(
     () => ({
       accept: ItemTypes.CHECKER,
-      canDrop: (item: DropItemProps) => canMoveChecker([x, y], item.id),
-      drop: (item: DropItemProps) => moveChecker([x, y], item.id),
+      canDrop: (item: DropItemProps) => canMovePlayer([x, y], item.id),
+      drop: (item: DropItemProps) => movePlayer([x, y], item.id),
       collect: (monitor) => ({
         isOver: !!monitor.isOver(),
         canDrop: !!monitor.canDrop(),
       }),
     }),
-    [x, y, moveChecker, canMoveChecker]
+    [x, y, movePlayer, canMovePlayer]
   );
 
   return (

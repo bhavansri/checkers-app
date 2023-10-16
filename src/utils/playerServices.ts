@@ -1,4 +1,4 @@
-import { GameCheckers, PlayerPieces } from "./constants";
+import { GameCheckers, PlayerCheckers } from "./constants";
 import { checkIfEmpty, isValidBounds } from "./helpers";
 
 export const canMoveChecker = (
@@ -46,11 +46,11 @@ export const canMoveChecker = (
   }
 };
 
-export const updatePlayerHops = (newGame: GameCheckers): PlayerPieces => {
-  let newPlayerPieces: PlayerPieces = newGame.playerCheckers;
+export const updatePlayerHops = (newGame: GameCheckers): PlayerCheckers => {
+  let newCheckers: PlayerCheckers = newGame.playerCheckers;
 
-  for (const id in newPlayerPieces) {
-    const player = newPlayerPieces[id];
+  for (const id in newCheckers) {
+    const player = newCheckers[id];
     const coords = player.coords;
     const currLeftHopCoords = player.leftHopCoords;
     const currRightHopCoords = player.rightHopCoords;
@@ -61,8 +61,8 @@ export const updatePlayerHops = (newGame: GameCheckers): PlayerPieces => {
       leftHopCoords.length !== currLeftHopCoords.length ||
       rightHopCoords.length !== currRightHopCoords.length
     ) {
-      newPlayerPieces = {
-        ...newPlayerPieces,
+      newCheckers = {
+        ...newCheckers,
         [id]: {
           coords: coords,
           leftHopCoords: leftHopCoords,
@@ -73,7 +73,7 @@ export const updatePlayerHops = (newGame: GameCheckers): PlayerPieces => {
     }
   }
 
-  return newPlayerPieces;
+  return newCheckers;
 };
 
 export const getLeftHopForPlayer = (

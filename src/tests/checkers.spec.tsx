@@ -7,7 +7,7 @@ import {
   within,
 } from "@testing-library/react";
 import { fireDragDrop, wrapWithBackend } from "react-dnd-test-utils";
-import { GameState, Move, defaultGame } from "../utils/constants";
+import { GameState, Move, initialGameState } from "../utils/constants";
 import {
   fetchRandomCpuChecker,
   generateCpuDestination,
@@ -25,7 +25,7 @@ describe("Checkers App Tests", () => {
     let gameState: GameState;
     beforeEach(() => {
       window.localStorage.clear();
-      gameState = defaultGame;
+      gameState = initialGameState;
       renderGame(gameState);
     });
 
@@ -151,7 +151,7 @@ describe("Checkers App Tests", () => {
 
     beforeEach(() => {
       window.localStorage.clear();
-      gameState = defaultGame;
+      gameState = initialGameState;
     });
 
     afterEach(cleanup);
@@ -202,7 +202,7 @@ describe("Checkers App Tests", () => {
 
     beforeEach(() => {
       window.localStorage.clear();
-      gameState = defaultGame;
+      gameState = initialGameState;
     });
 
     afterEach(cleanup);
@@ -252,7 +252,7 @@ describe("Checkers App Tests", () => {
     let gameState: GameState;
     beforeEach(() => {
       window.localStorage.clear();
-      gameState = defaultGame;
+      gameState = initialGameState;
       renderGame(gameState);
     });
 

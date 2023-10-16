@@ -23,28 +23,28 @@ export type GameState = {
 };
 
 export type GameCheckers = {
-  playerCheckers: PlayerPieces;
-  computerCheckers: ComputerPieces;
+  playerCheckers: PlayerCheckers;
+  computerCheckers: ComputerCheckers;
 };
 
-export type PlayerPieces = { [id: string]: PlayerPiece };
-export type ComputerPieces = { [id: string]: ComputerPiece };
+export type PlayerCheckers = { [id: string]: PlayerChecker };
+export type ComputerCheckers = { [id: string]: ComputerChecker };
 
-type PlayerPiece = {
+type PlayerChecker = {
   coords: number[];
   leftHopCoords: number[];
   rightHopCoords: number[];
   lastMove: Move;
 };
 
-type ComputerPiece = {
+type ComputerChecker = {
   coords: number[];
   leftHopCoords: number[];
   rightHopCoords: number[];
   lastMove: Move;
 };
 
-const playerCheckers: PlayerPieces = {
+const playerCheckers: PlayerCheckers = {
   "1": {
     coords: [0, 7],
     leftHopCoords: [],
@@ -119,7 +119,7 @@ const playerCheckers: PlayerPieces = {
   },
 };
 
-const computerCheckers: ComputerPieces = {
+const computerCheckers: ComputerCheckers = {
   "1": {
     coords: [1, 0],
     leftHopCoords: [],
@@ -194,7 +194,7 @@ const computerCheckers: ComputerPieces = {
   },
 };
 
-export const defaultGame: GameState = {
+export const initialGameState: GameState = {
   past: [],
   present: {
     playerCheckers: playerCheckers,

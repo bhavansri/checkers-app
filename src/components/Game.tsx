@@ -29,14 +29,14 @@ function Game({ gameState }: GameProps) {
   const computerScore = 12 - Object.keys(game.present.playerCheckers).length;
   const playerScore = 12 - Object.keys(game.present.computerCheckers).length;
 
-  const moveChecker = (final: number[], id: string) => {
+  const movePlayer = (final: number[], id: string) => {
     if (!cpuTurn) {
       dispatch({ type: "playerMove", coords: final, id: id });
       setCpuTurn(true);
     }
   };
 
-  const handleCanMove = (final: number[], id: string): boolean => {
+  const handleCanMovePlayer = (final: number[], id: string): boolean => {
     if (!cpuTurn) {
       return canMoveChecker(game.present, final, id);
     } else {
@@ -163,8 +163,8 @@ function Game({ gameState }: GameProps) {
       <div className="h-[500px] w-[500px]">
         <Board
           gameState={game}
-          moveChecker={moveChecker}
-          handleCanMove={handleCanMove}
+          movePlayer={movePlayer}
+          handleCanMovePlayer={handleCanMovePlayer}
         />
       </div>
     </div>

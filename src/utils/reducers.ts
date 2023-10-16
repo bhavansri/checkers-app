@@ -8,7 +8,7 @@ import {
   getRightHopForPlayer,
   updatePlayerHops,
 } from "./playerServices";
-import { GameCheckers, GameState, Move, defaultGame } from "./constants";
+import { GameCheckers, GameState, Move, initialGameState } from "./constants";
 import { getComputerMoveType, getPlayerMoveType } from "./helpers";
 
 type GameAction = {
@@ -88,7 +88,7 @@ function undoMove(state: GameState): GameState {
 
 function resetGame(): GameState {
   localStorage.clear();
-  return defaultGame;
+  return initialGameState;
 }
 function movePlayer(
   game: GameCheckers,
@@ -217,7 +217,7 @@ function moveCpu(
     };
   }
 
-  // since computer pieces changed, update all affected player pieces
+  // since computer checkers changed, update all affected player checkers
   newGame.playerCheckers = updatePlayerHops(newGame);
 
   return newGame;
