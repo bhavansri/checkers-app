@@ -5,6 +5,7 @@ import {
   screen,
   RenderResult,
   within,
+  fireEvent,
 } from "@testing-library/react";
 import { fireDragDrop, wrapWithBackend } from "react-dnd-test-utils";
 import { GameState, Move, initialGameState } from "../utils/constants";
@@ -382,6 +383,98 @@ describe("Checkers App Tests", () => {
 
       expect(within(targetSquare).getByTestId("player-checker")).not.toBeNull();
       expect(screen.queryByTestId("cpu-checker")).not.toBeInTheDocument();
+    });
+  });
+
+  describe("Undo and redo actions", () => {
+    let gameState: GameState;
+    beforeEach(() => {
+      window.localStorage.clear();
+      gameState = initialGameState;
+      renderGame(gameState);
+    });
+
+    afterEach(cleanup);
+
+    it("should restore state after performing a move, when pressing redo", async () => {
+      const checker = within(screen.getByTestId("(2,5)")).getByTestId(
+        "player-checker"
+      );
+      const initialSquare = screen.getByTestId("(2,5)");
+      const targetSquare = screen.getByTestId("(1,4)");
+      await fireDragDrop(checker, targetSquare);
+      const undoButton = screen.getByTestId("undo-button");
+      fireEvent.click(undoButton);
+
+      expect(
+        within(targetSquare).queryByTestId("player-checker")
+      ).not.toBeInTheDocument();
+      expect(
+        within(initialSquare).getByTestId("player-checker")
+      ).not.toBeNull();
+    });
+
+    it("should restore state after performing an undo action, when pressing redo", async () => {
+      const checker = within(screen.getByTestId("(2,5)")).getByTestId(
+        "player-checker"
+      );
+
+      const targetSquare = screen.getByTestId("(1,4)");
+      await fireDragDrop(checker, targetSquare);
+      const undoButton = screen.getByTestId("undo-button");
+      fireEvent.click(undoButton);
+      const redoButton = screen.getByTestId("redo-button");
+      fireEvent.click(redoButton);
+
+      expect(within(targetSquare).getByTestId("player-checker")).not.toBeNull();
+    });
+  });
+
+  describe("Displays correct scores", () => {
+    let progressedGameState: GameState;
+
+    beforeEach(() => {
+      window.localStorage.clear();
+      progressedGameState = {
+        past: [],
+        present: {
+          playerCheckers: {
+            "1": {
+              coords: [5, 4],
+              leftHopCoords: [7, 2],
+              rightHopCoords: [],
+              lastMove: Move.none,
+            },
+          },
+          computerCheckers: {
+            "1": {
+              coords: [6, 3],
+              leftHopCoords: [],
+              rightHopCoords: [],
+              lastMove: Move.none,
+            },
+            "2": {
+              coords: [4, 3],
+              leftHopCoords: [],
+              rightHopCoords: [],
+              lastMove: Move.none,
+            },
+          },
+        },
+        future: [],
+      };
+
+      renderGame(progressedGameState);
+    });
+
+    afterEach(cleanup);
+
+    it("should display the computer with a leading score", () => {
+      const computerScore = screen.getByTestId("cpu-score");
+      const playerScore = screen.getByTestId("player-score");
+
+      expect(computerScore).toHaveTextContent("11");
+      expect(playerScore).toHaveTextContent("10");
     });
   });
 });

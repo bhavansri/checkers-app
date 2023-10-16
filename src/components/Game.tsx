@@ -109,6 +109,7 @@ function Game({ gameState }: GameProps) {
               onClick={handleUndo}
               type="button"
               className="text-white bg-gray-500 hover:bg-gray-600 focus:ring-4 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center"
+              data-testid="undo-button"
             >
               <svg
                 className="w-4 h-4 text-white"
@@ -119,9 +120,9 @@ function Game({ gameState }: GameProps) {
               >
                 <path
                   stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
                   d="M4 7 1 4l3-3m0 12h6.5a4.5 4.5 0 1 0 0-9H2"
                 />
               </svg>
@@ -133,6 +134,7 @@ function Game({ gameState }: GameProps) {
               onClick={handleRedo}
               type="button"
               className="text-white bg-gray-500 hover:bg-gray-600 focus:ring-4 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center mr-2"
+              data-testid="redo-button"
             >
               <svg
                 className="w-4 h-4 text-white"
@@ -143,9 +145,9 @@ function Game({ gameState }: GameProps) {
               >
                 <path
                   stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
                   d="m12 7 3-3-3-3m0 12H5.5a4.5 4.5 0 1 1 0-9H14"
                 />
               </svg>
@@ -153,9 +155,13 @@ function Game({ gameState }: GameProps) {
             <p className="uppercase text-sm font-semibold">Redo</p>
           </div>
           <div className="text-3xl font-semibold flex gap-4">
-            <p className="text-black">{playerScore}</p>
+            <p className="text-black" data-testid="player-score">
+              {playerScore}
+            </p>
             <p className="text-gray-500">-</p>
-            <p className="text-red-600">{computerScore}</p>
+            <p className="text-red-600" data-testid="cpu-score">
+              {computerScore}
+            </p>
           </div>
           <Timer startTime={startTime} />
         </div>
