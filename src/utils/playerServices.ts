@@ -1,8 +1,8 @@
-import { GameState, PlayerPieces } from "./constants";
+import { GameCheckers, PlayerPieces } from "./constants";
 import { checkIfEmpty, isValidBounds } from "./helpers";
 
 export const canMoveChecker = (
-  game: GameState,
+  game: GameCheckers,
   final: number[],
   id: string
 ): boolean => {
@@ -46,7 +46,7 @@ export const canMoveChecker = (
   }
 };
 
-export const updatePlayerHops = (newGame: GameState): PlayerPieces => {
+export const updatePlayerHops = (newGame: GameCheckers): PlayerPieces => {
   let newPlayerPieces: PlayerPieces = newGame.playerCheckers;
 
   for (const id in newPlayerPieces) {
@@ -77,7 +77,7 @@ export const updatePlayerHops = (newGame: GameState): PlayerPieces => {
 };
 
 export const getLeftHopForPlayer = (
-  game: GameState,
+  game: GameCheckers,
   coords: number[]
 ): number[] => {
   const leftHopCoords = [coords[0] - 2, coords[1] - 2];
@@ -107,7 +107,7 @@ export const getLeftHopForPlayer = (
 };
 
 export const getRightHopForPlayer = (
-  game: GameState,
+  game: GameCheckers,
   coords: number[]
 ): number[] => {
   const rightHopCoords = [coords[0] + 2, coords[1] - 2];

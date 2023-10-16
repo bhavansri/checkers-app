@@ -8,11 +8,11 @@ import {
   getRightHopForPlayer,
   updatePlayerHops,
 } from "./playerServices";
-import { GameState, Move, defaultGame } from "./constants";
+import { GameCheckers, GameState, Move, defaultGame } from "./constants";
 import { getComputerMoveType, getPlayerMoveType } from "./helpers";
 
 type GameAction = {
-  type: "cpuMove" | "playerMove" | "resetGame";
+  type: "cpuMove" | "playerMove" | "resetGame" | "undo" | "redo";
   coords?: number[];
   id?: string;
 };
@@ -21,16 +21,38 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
     case "cpuMove":
       if (action.coords && action.id) {
-        return moveCpu(state, action.coords, action.id);
+        const newCpuMove: GameCheckers = moveCpu(
+          state.present,
+          action.coords,
+          action.id
+        );
+        return {
+          past: [state.present, ...state.past],
+          present: newCpuMove,
+          future: [],
+        };
       } else {
         return state;
       }
     case "playerMove":
       if (action.coords && action.id) {
-        return movePlayer(state, action.coords, action.id);
+        const newPlayerMove: GameCheckers = movePlayer(
+          state.present,
+          action.coords,
+          action.id
+        );
+        return {
+          past: [state.present, ...state.past],
+          present: newPlayerMove,
+          future: [],
+        };
       } else {
         return state;
       }
+    case "redo":
+      return redoMove(state);
+    case "undo":
+      return undoMove(state);
     case "resetGame":
       return resetGame();
     default:
@@ -38,12 +60,42 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
   }
 }
 
-function resetGame() {
+function redoMove(state: GameState): GameState {
+  if (state.future.length > 0) {
+    const [newPresent, ...newFuture] = state.future;
+    return {
+      past: [state.present, ...state.past],
+      present: newPresent,
+      future: newFuture,
+    };
+  } else {
+    return state;
+  }
+}
+
+function undoMove(state: GameState): GameState {
+  if (state.past.length > 0) {
+    const [newPresent, ...newPast] = state.past;
+    return {
+      past: newPast,
+      present: newPresent,
+      future: [state.present, ...state.future],
+    };
+  } else {
+    return state;
+  }
+}
+
+function resetGame(): GameState {
   localStorage.clear();
   return defaultGame;
 }
-function movePlayer(game: GameState, final: number[], id: string) {
-  let newGame: GameState;
+function movePlayer(
+  game: GameCheckers,
+  final: number[],
+  id: string
+): GameCheckers {
+  let newGame: GameCheckers;
   const player = game.playerCheckers;
   const computer = game.computerCheckers;
 
@@ -104,8 +156,12 @@ function movePlayer(game: GameState, final: number[], id: string) {
   return newGame;
 }
 
-function moveCpu(game: GameState, final: number[], id: string) {
-  let newGame: GameState;
+function moveCpu(
+  game: GameCheckers,
+  final: number[],
+  id: string
+): GameCheckers {
+  let newGame: GameCheckers;
   const player = game.playerCheckers;
   const computer = game.computerCheckers;
 

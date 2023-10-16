@@ -1,7 +1,7 @@
-import { ComputerPieces, GameState } from "./constants";
+import { ComputerPieces, GameCheckers } from "./constants";
 import { checkIfEmpty, isValidBounds } from "./helpers";
 
-export const fetchRandomCpuChecker = (game: GameState): string => {
+export const fetchRandomCpuChecker = (game: GameCheckers): string => {
   let randomKey = "";
 
   for (const key in game.computerCheckers) {
@@ -26,7 +26,7 @@ export const fetchRandomCpuChecker = (game: GameState): string => {
 };
 
 export const generateCpuDestination = (
-  game: GameState,
+  game: GameCheckers,
   cpuID: string
 ): number[] => {
   let destinationCoords: number[] = [];
@@ -67,7 +67,7 @@ export const generateCpuDestination = (
   return destinationCoords;
 };
 
-export const updateComputerHops = (newGame: GameState): ComputerPieces => {
+export const updateComputerHops = (newGame: GameCheckers): ComputerPieces => {
   let newComputerPieces: ComputerPieces = newGame.computerCheckers;
 
   for (const id in newComputerPieces) {
@@ -98,7 +98,7 @@ export const updateComputerHops = (newGame: GameState): ComputerPieces => {
 };
 
 export const getLeftHopForCPU = (
-  game: GameState,
+  game: GameCheckers,
   coords: number[]
 ): number[] => {
   const leftHopCoords = [coords[0] - 2, coords[1] + 2];
@@ -128,7 +128,7 @@ export const getLeftHopForCPU = (
 };
 
 export const getRightHopForCPU = (
-  game: GameState,
+  game: GameCheckers,
   coords: number[]
 ): number[] => {
   const rightHopCoords = [coords[0] + 2, coords[1] + 2];

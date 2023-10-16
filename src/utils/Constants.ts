@@ -10,10 +10,16 @@ export enum Move {
   hopRight = "HOP_RIGHT",
 }
 
-export interface GameState {
+export type GameState = {
+  past: GameCheckers[];
+  present: GameCheckers;
+  future: GameCheckers[];
+};
+
+export type GameCheckers = {
   playerCheckers: PlayerPieces;
   computerCheckers: ComputerPieces;
-}
+};
 
 export type PlayerPieces = { [id: string]: PlayerPiece };
 export type ComputerPieces = { [id: string]: ComputerPiece };
@@ -183,6 +189,10 @@ const computerCheckers: ComputerPieces = {
 };
 
 export const defaultGame: GameState = {
-  playerCheckers: playerCheckers,
-  computerCheckers: computerCheckers,
+  past: [],
+  present: {
+    playerCheckers: playerCheckers,
+    computerCheckers: computerCheckers,
+  },
+  future: [],
 };

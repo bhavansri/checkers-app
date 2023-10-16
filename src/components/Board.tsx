@@ -78,14 +78,14 @@ function renderSquare(
         hoveringId={hoveringId}
       >
         <>
-          {showChecker(game.playerCheckers) ? (
+          {showChecker(game.present.playerCheckers) ? (
             <PlayerPiece
-              id={getIdForPiece(game.playerCheckers)}
+              id={getIdForPiece(game.present.playerCheckers)}
               onHoverChange={onHoverChange}
             />
           ) : null}
-          {showCpuChecker(game.computerCheckers) ? (
-            <CpuPiece id={getCpuIdForPiece(game.computerCheckers)} />
+          {showCpuChecker(game.present.computerCheckers) ? (
+            <CpuPiece id={getCpuIdForPiece(game.present.computerCheckers)} />
           ) : null}
         </>
       </BoardSquare>

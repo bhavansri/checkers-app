@@ -1,4 +1,4 @@
-import { GameState, Move } from "./constants";
+import { GameCheckers, Move } from "./constants";
 
 export function isValidBounds(pos: number[]) {
   if (pos[0] < 0 || pos[0] > 7 || pos[1] < 0 || pos[1] > 7) {
@@ -8,7 +8,10 @@ export function isValidBounds(pos: number[]) {
   }
 }
 
-export function checkIfEmpty(game: GameState, destination: number[]): boolean {
+export function checkIfEmpty(
+  game: GameCheckers,
+  destination: number[]
+): boolean {
   for (const key in game.playerCheckers) {
     const piece = game.playerCheckers[key];
     const playerXY = piece.coords;

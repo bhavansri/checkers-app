@@ -157,7 +157,7 @@ describe("Checkers App Tests", () => {
     afterEach(cleanup);
 
     it("should generate a random key from remaining game state", () => {
-      const checkerKey = fetchRandomCpuChecker(gameState);
+      const checkerKey = fetchRandomCpuChecker(gameState.present);
 
       expect(parseInt(checkerKey)).toBeLessThan(13);
       expect(parseInt(checkerKey)).toBeGreaterThan(0);
@@ -165,30 +165,34 @@ describe("Checkers App Tests", () => {
 
     it("should return cpu key with a hoppable player checker", () => {
       const gameState: GameState = {
-        playerCheckers: {},
-        computerCheckers: {
-          "1": {
-            coords: [0, 7],
-            leftHopCoords: [],
-            rightHopCoords: [],
-            lastMove: Move.none,
-          },
-          "2": {
-            coords: [2, 7],
-            leftHopCoords: [],
-            rightHopCoords: [],
-            lastMove: Move.none,
-          },
-          "3": {
-            coords: [4, 7],
-            leftHopCoords: [2, 5],
-            rightHopCoords: [],
-            lastMove: Move.none,
+        past: [],
+        present: {
+          playerCheckers: {},
+          computerCheckers: {
+            "1": {
+              coords: [0, 7],
+              leftHopCoords: [],
+              rightHopCoords: [],
+              lastMove: Move.none,
+            },
+            "2": {
+              coords: [2, 7],
+              leftHopCoords: [],
+              rightHopCoords: [],
+              lastMove: Move.none,
+            },
+            "3": {
+              coords: [4, 7],
+              leftHopCoords: [2, 5],
+              rightHopCoords: [],
+              lastMove: Move.none,
+            },
           },
         },
+        future: [],
       };
 
-      const checkerKey = fetchRandomCpuChecker(gameState);
+      const checkerKey = fetchRandomCpuChecker(gameState.present);
       expect(parseInt(checkerKey)).toEqual(3);
     });
   });
@@ -204,32 +208,42 @@ describe("Checkers App Tests", () => {
     afterEach(cleanup);
 
     it("should move (5,2) cpu checker by 1-square to either (4,3) or (6,3)", () => {
-      const randomizedDestination = generateCpuDestination(gameState, "11");
-      const initialCoords = gameState.computerCheckers["11"].coords;
+      const randomizedDestination = generateCpuDestination(
+        gameState.present,
+        "11"
+      );
+      const initialCoords = gameState.present.computerCheckers["11"].coords;
       expect(Math.abs(randomizedDestination[0] - initialCoords[0])).toEqual(1);
       expect(Math.abs(randomizedDestination[1] - initialCoords[1])).toEqual(1);
     });
 
     it("should perform hop if player checker exists in-between", () => {
       const hopComputerState: GameState = {
-        playerCheckers: {
-          "1": {
-            coords: [6, 3],
-            leftHopCoords: [],
-            rightHopCoords: [],
-            lastMove: Move.right,
+        past: [],
+        present: {
+          playerCheckers: {
+            "1": {
+              coords: [6, 3],
+              leftHopCoords: [],
+              rightHopCoords: [],
+              lastMove: Move.right,
+            },
+          },
+          computerCheckers: {
+            "1": {
+              coords: [7, 2],
+              leftHopCoords: [5, 4],
+              rightHopCoords: [],
+              lastMove: Move.none,
+            },
           },
         },
-        computerCheckers: {
-          "1": {
-            coords: [7, 2],
-            leftHopCoords: [5, 4],
-            rightHopCoords: [],
-            lastMove: Move.none,
-          },
-        },
+        future: [],
       };
-      const hopDestination = generateCpuDestination(hopComputerState, "1");
+      const hopDestination = generateCpuDestination(
+        hopComputerState.present,
+        "1"
+      );
       expect(hopDestination.toString()).toEqual([5, 4].toString());
     });
   });
@@ -281,22 +295,26 @@ describe("Checkers App Tests", () => {
     beforeEach(() => {
       window.localStorage.clear();
       hopPlayerState = {
-        playerCheckers: {
-          "1": {
-            coords: [5, 4],
-            leftHopCoords: [7, 2],
-            rightHopCoords: [],
-            lastMove: Move.none,
+        past: [],
+        present: {
+          playerCheckers: {
+            "1": {
+              coords: [5, 4],
+              leftHopCoords: [7, 2],
+              rightHopCoords: [],
+              lastMove: Move.none,
+            },
+          },
+          computerCheckers: {
+            "1": {
+              coords: [6, 3],
+              leftHopCoords: [],
+              rightHopCoords: [],
+              lastMove: Move.none,
+            },
           },
         },
-        computerCheckers: {
-          "1": {
-            coords: [6, 3],
-            leftHopCoords: [],
-            rightHopCoords: [],
-            lastMove: Move.none,
-          },
-        },
+        future: [],
       };
 
       renderGame(hopPlayerState);
@@ -325,22 +343,26 @@ describe("Checkers App Tests", () => {
     beforeEach(() => {
       window.localStorage.clear();
       hopPlayerState = {
-        playerCheckers: {
-          "1": {
-            coords: [5, 4],
-            leftHopCoords: [],
-            rightHopCoords: [3, 2],
-            lastMove: Move.none,
+        past: [],
+        present: {
+          playerCheckers: {
+            "1": {
+              coords: [5, 4],
+              leftHopCoords: [],
+              rightHopCoords: [3, 2],
+              lastMove: Move.none,
+            },
+          },
+          computerCheckers: {
+            "1": {
+              coords: [4, 3],
+              leftHopCoords: [],
+              rightHopCoords: [],
+              lastMove: Move.none,
+            },
           },
         },
-        computerCheckers: {
-          "1": {
-            coords: [4, 3],
-            leftHopCoords: [],
-            rightHopCoords: [],
-            lastMove: Move.none,
-          },
-        },
+        future: [],
       };
 
       renderGame(hopPlayerState);
