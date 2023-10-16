@@ -511,4 +511,47 @@ describe("Checkers App Tests", () => {
       );
     });
   });
+
+  describe("Displays victory banner", () => {
+    let progressedGameState: GameState;
+
+    beforeEach(() => {
+      window.localStorage.clear();
+      progressedGameState = {
+        past: [],
+        present: {
+          playerCheckers: {},
+          computerCheckers: {
+            "1": {
+              coords: [6, 3],
+              leftHopCoords: [],
+              rightHopCoords: [],
+              lastMove: Move.none,
+            },
+            "2": {
+              coords: [4, 3],
+              leftHopCoords: [],
+              rightHopCoords: [],
+              lastMove: Move.none,
+            },
+          },
+          playerMoveCount: 0,
+          cpuMoveCount: 0,
+        },
+        future: [],
+      };
+
+      renderGame(progressedGameState);
+    });
+
+    afterEach(cleanup);
+
+    it("should display the victory banner for computer when it won by 2", () => {
+      const victoryModal = screen.getByTestId("victory-modal");
+      const victoryHeader = screen.getByTestId("victory-header");
+
+      expect(victoryModal).toBeInTheDocument();
+      expect(victoryHeader).toHaveTextContent("Computer wins!");
+    });
+  });
 });

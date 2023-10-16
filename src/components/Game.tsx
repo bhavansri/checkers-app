@@ -9,6 +9,7 @@ import {
 import Board from "./Board";
 import { GameState, StorageKeys } from "../utils/constants";
 import Timer from "./Timer";
+import VictoryModal from "./VictoryModal";
 
 type GameProps = {
   gameState: GameState;
@@ -96,6 +97,11 @@ function Game({ gameState }: GameProps) {
 
   return (
     <div className="m-5">
+      <VictoryModal
+        computerScore={computerScore}
+        playerScore={playerScore}
+        onReset={handleOnReset}
+      />
       <div className="flex items-start gap-10 mb-5">
         <button
           className="text-white bg-gray-800 hover:bg-gray-900 rounded-lg px-5 py-2.5"
